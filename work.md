@@ -1,17 +1,15 @@
-HF_ST558Project3
+Untitled
 ================
-Hui Fang
+Joy Zhou
 2023-11-01
 
-## R Markdown
+# Introduction section
 
-This is an R Markdown document. Markdown is a simple formatting syntax
-for authoring HTML, PDF, and MS Word documents. For more details on
-using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that
-includes both content as well as the output of any embedded R code
-chunks within the document. You can embed an R code chunk like this:
+`diabetes _ binary _ health _ indicators _ BRFSS2015.csv` is a clean
+dataset of 253,680 survey responses to the CDC’s BRFSS2015. The target
+variable Diabetes_binary has 2 classes. 0 is for no diabetes, and 1 is
+for prediabetes or diabetes. This dataset has 21 feature variables and
+is not balanced. 1 never attended school or only kindergarden
 
 ``` r
 summary(cars)
