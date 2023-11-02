@@ -3,9 +3,9 @@
 This is a repo containing work from project3 for ST558.
 
 The following R packages used for this project:
-+ [`tidyverse`](https://www.tidyverse.org/)  
-+ [`caret`](https://cran.r-project.org/web/packages/caret/)
-+ 
++ [`tidyverse`](https://www.tidyverse.org/) An opinionated collection of R packages designed for data science  
++ [`caret`](https://cran.r-project.org/web/packages/caret/) Multiple functions for training and plotting classification and regression models.
++ [`knitr`](https://cran.r-project.org/web/packages/knitr/index.html) Provides a general-purpose tool for dynamic report generation in R using Literate Programming techniques.
 
 + the code used to create the analyses from a single .Rmd file (i.e. the render() code)
 rmarkdown::render("work.Rmd", output_file = "Cleveland Browns.html",
