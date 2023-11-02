@@ -34,8 +34,8 @@ the response variable. The information of variable can be found
 - CholCheck: 0 = no cholesterol check in 5 years 1 = yes cholesterol
   check in 5 years  
 - BMI: Body Mass Index  
-- Smoker: Have you smoked at least 100 cigarettes in your entire life?
-  \[Note: 5 packs = 100 cigarettes\] 0 = no 1 = yes  
+- Smoker: Have you smoked at least 100 cigarettes in your entire life? 0
+  = no 1 = yes  
 - Stroke: 0 = no 1 = yes  
 - HeartDiseaseorAttack: coronary heart disease (CHD) or myocardial
   infarction (MI) 0 = no 1 = yes  
@@ -100,13 +100,20 @@ Income <- factor(diabetes$Income, levels = c("1", "2", "3", "4", "5", "6", "7", 
 
 ``` r
 # Never attended school or only kindergarten to Grades 1 through 8 (Elementary)
-diabetes1_2 <- diabetes %>% filter(Education %in% c(1, 2))
+diabetes2 <- diabetes %>% filter(Education %in% c(1, 2))
+
+# Combine level 1 and 2 to make it as 2
+diabetes2$Education <- ifelse(diabetes2$Education == 1, 2, 2)
+
 # Grades 9 through 11 (Some high school) 
 diabetes3 <- diabetes %>% filter(Education == 3)
+
 # Grade 12 or GED (High school graduate) 
 diabetes4 <- diabetes %>% filter(Education == 4)
+
 # College 1 year to 3 years (Some college or technical school) 
 diabetes5 <- diabetes %>% filter(Education == 5)
+
 # College 4 years or more (College graduate) 
 diabetes6 <- diabetes %>% filter(Education == 6)
 ```
