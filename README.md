@@ -17,6 +17,7 @@ output_file <- paste0(EducationLv, ".html")
 params = lapply(EducationLv, FUN = function(x){list(Edu = x)})
 reports <- tibble::tibble(output_file, params)
 reports
+
 apply(reports, MARGIN = 1,
       FUN = function(x){render(input = "work.Rmd", 
 				output_file = x[[1]], 
@@ -30,4 +31,3 @@ You can access the rendered documents:
 + Analysis for [HighSchool](HighSchool.html)  
 + Analysis for [SomeCollege](SomeCollege.html)  
 + Analysis for [College](College.html)  
-

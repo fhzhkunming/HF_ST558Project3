@@ -1,6 +1,6 @@
 ST558_Project3
 ================
-Hui Fang
+Hui Fang and Joy Zhou
 2023-11-02
 
 # Introduction
