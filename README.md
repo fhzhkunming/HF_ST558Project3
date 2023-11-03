@@ -11,10 +11,11 @@ The following R packages used for this project:
 + [`DT`](https://rstudio.github.io/DT/)
 
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
-library(rmarkdown)
-#get unique Education level
-EducationLv <- unique(diabetes$Education)
-#create filenames
+```{r}
+library(rmarkdown) 
+#get unique Education level  
+EducationLv <- unique(diabetes$Education)  
+#create filenames  
 output_file <- paste0(EducationLv, ".html")
 #create a list for each team with just the team name parameter
 params = lapply(EducationLv, FUN = function(x){list(Edu = x)})
@@ -29,6 +30,7 @@ apply(reports, MARGIN = 1,
 				output_file = x[[1]], 
 				params = x[[2]])
  				})
+```
                   
                   
 
