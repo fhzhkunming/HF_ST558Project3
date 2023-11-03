@@ -106,15 +106,37 @@ head(diabetes)
     ## #   NoDocbcCost <dbl>, GenHlth <dbl>, MentHlth <dbl>, PhysHlth <dbl>,
     ## #   DiffWalk <dbl>, Sex <dbl>, Age <dbl>, Education <dbl>, Income <dbl>
 
+<<<<<<< HEAD
 ``` r
 # Convert Diabetes_binary and Income variables to factor
 Diabetes_binary <- as.factor(diabetes$Diabetes_binary)
 Income <- factor(diabetes$Income, levels = c("1", "2", "3", "4", "5", "6", "7", "8"))
 ```
+=======
+# grouping Education levels
+
+diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2),
+“Non_Elementary”,
+ifelse(diabetes$Education == 3, "SomeHighSchool",  ifelse(diabetes$Education
+== 4, “HighSchool”,
+ifelse(diabetes$Education == 5, "SomeCollege",  ifelse(diabetes$Education
+== 6, “College”, NA)))))
+
+# Convert some variables to factor
+
+diabetes$Education <- as.factor(diabetes$Education)
+\#diabetes$Diabetes_binary <- as.factor(diabetes$Diabetes_binary)
+\#diabetes$Income <- as.factor(diabetes$Income)
+diabetes$HighBP <- as.factor(diabetes$HighBP)
+diabetes$HighChol <- as.factor(diabetes$HighChol)
+diabetes$Sex <- as.factor(diabetes$Sex)
+diabetes$Fruits <- as.factor(diabetes$Fruits) params\$Edu
+>>>>>>> joyz
 
 ## Subsetting the dataset based on education level
 
 ``` r
+<<<<<<< HEAD
 # Never attended school or only kindergarten to Grades 1 through 8 (Elementary)
 diabetes2 <- diabetes %>% filter(Education %in% c(1, 2))
 
@@ -150,28 +172,22 @@ params$Education
 >>>>>>> f0c30b759d95e0613be060fc81ddae23e1a0e4a5
 missing_values <- colSums(is.na(diabetes2))
 missing_values # no missing values
+=======
+EducationData <- filter(diabetes, (Education == params$Edu))
 ```
 
-    ##      Diabetes_binary               HighBP             HighChol 
-    ##                    0                    0                    0 
-    ##            CholCheck                  BMI               Smoker 
-    ##                    0                    0                    0 
-    ##               Stroke HeartDiseaseorAttack         PhysActivity 
-    ##                    0                    0                    0 
-    ##               Fruits              Veggies    HvyAlcoholConsump 
-    ##                    0                    0                    0 
-    ##        AnyHealthcare          NoDocbcCost              GenHlth 
-    ##                    0                    0                    0 
-    ##             MentHlth             PhysHlth             DiffWalk 
-    ##                    0                    0                    0 
-    ##                  Sex                  Age            Education 
-    ##                    0                    0                    0 
-    ##               Income 
-    ##                    0
+## EDA
+
+``` r
+# Checking missing values of columns in diabetes2
+missing_values <- colSums(is.na(EducationData))
+>>>>>>> joyz
+```
 
 ``` r
 # Describing 
 library(knitr)
+<<<<<<< HEAD
 kable(summary(diabetes2))
 ```
 
@@ -228,3 +244,37 @@ kable(rounded_Cor_Matrix)
 | Age                  |            0.16 |   0.30 |     0.12 |      0.11 | -0.12 |   0.06 |   0.14 |                 0.20 |        -0.02 |  -0.01 |   -0.07 |             -0.06 |          0.37 |       -0.20 |    0.08 |    -0.08 |     0.07 |     0.20 |  0.01 |  1.00 |        NA |  -0.12 |
 | Education            |              NA |     NA |       NA |        NA |    NA |     NA |     NA |                   NA |           NA |     NA |      NA |                NA |            NA |          NA |      NA |       NA |       NA |       NA |    NA |    NA |         1 |     NA |
 | Income               |           -0.15 |  -0.14 |    -0.08 |     -0.06 | -0.05 |   0.03 |  -0.07 |                -0.07 |         0.10 |   0.12 |    0.07 |              0.07 |         -0.04 |       -0.09 |   -0.26 |    -0.15 |    -0.19 |    -0.22 |  0.21 | -0.12 |        NA |   1.00 |
+=======
+kable(summary(EducationData))
+```
+
+|     | Diabetes_binary | HighBP      | HighChol    | CholCheck   | BMI         | Smoker      | Stroke      | HeartDiseaseorAttack | PhysActivity | Fruits      | Veggies     | HvyAlcoholConsump | AnyHealthcare | NoDocbcCost | GenHlth     | MentHlth    | PhysHlth    | DiffWalk    | Sex         | Age         | Education   | Income      |
+|:----|:----------------|:------------|:------------|:------------|:------------|:------------|:------------|:---------------------|:-------------|:------------|:------------|:------------------|:--------------|:------------|:------------|:------------|:------------|:------------|:------------|:------------|:------------|:------------|
+|     | Min. : NA       | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA            | Min. : NA    | Min. : NA   | Min. : NA   | Min. : NA         | Min. : NA     | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   | Min. : NA   |
+|     | 1st Qu.: NA     | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA          | 1st Qu.: NA  | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA       | 1st Qu.: NA   | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA | 1st Qu.: NA |
+|     | Median : NA     | Median : NA | Median : NA | Median : NA | Median : NA | Median : NA | Median : NA | Median : NA          | Median : NA  | Median : NA | Median : NA | Median : NA       | Median : NA   | Median : NA | Median : NA | Median : NA | Median : NA | Median : NA | Median : NA | Median : NA | Median : NA | Median : NA |
+|     | Mean :NaN       | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN            | Mean :NaN    | Mean :NaN   | Mean :NaN   | Mean :NaN         | Mean :NaN     | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   | Mean :NaN   |
+|     | 3rd Qu.: NA     | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA          | 3rd Qu.: NA  | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA       | 3rd Qu.: NA   | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA | 3rd Qu.: NA |
+|     | Max. : NA       | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA            | Max. : NA    | Max. : NA   | Max. : NA   | Max. : NA         | Max. : NA     | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   | Max. : NA   |
+
+``` r
+# Create a correlation matrix between variables
+Cor_Matrix <- EducationData %>% 
+         select(Diabetes_binary, BMI, MentHlth, PhysHlth, Age, Income) %>%
+         cor()
+
+# Round the correlation matrix to two decimal places
+rounded_Cor_Matrix <- round(Cor_Matrix, digits = 2)
+# Print the rounded correlation matrix
+kable(rounded_Cor_Matrix)
+```
+
+|                 | Diabetes_binary | BMI | MentHlth | PhysHlth | Age | Income |
+|:----------------|----------------:|----:|---------:|---------:|----:|-------:|
+| Diabetes_binary |              NA |  NA |       NA |       NA |  NA |     NA |
+| BMI             |              NA |  NA |       NA |       NA |  NA |     NA |
+| MentHlth        |              NA |  NA |       NA |       NA |  NA |     NA |
+| PhysHlth        |              NA |  NA |       NA |       NA |  NA |     NA |
+| Age             |              NA |  NA |       NA |       NA |  NA |     NA |
+| Income          |              NA |  NA |       NA |       NA |  NA |     NA |
+>>>>>>> joyz
