@@ -15,7 +15,7 @@ library(rmarkdown)
 EducationLv <- unique(diabetes$Education)
 # create filenames
 output_file <- paste0(EducationLv, ".html")
-#create a list for each team with just the team name parameter
+# create a list for each team with just the team name parameter
 params = lapply(EducationLv, FUN = function(x){list(Edu = x)})
 
 # put into a data frame
