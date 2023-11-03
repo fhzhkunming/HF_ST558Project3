@@ -9,12 +9,7 @@ The following R packages used for this project:
 + [`DT`](https://rstudio.github.io/DT/)
 
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
-
-library(rmarkdown)
-rmarkdown::render("work.Rmd", output_file = "Highschool.html",
-                  params = list(Education = "3"))
-
-
+```{r}
 library(rmarkdown)
 #get unique Education level
 EducationLv <- unique(diabetes$Education)
@@ -35,7 +30,7 @@ apply(reports, MARGIN = 1,
 				params = x[[2]])
  				})
                   
-                  
+```                  
 
 links to .html files of the generated analyses (which will be created by github pages! Not you!)  
 For example,
