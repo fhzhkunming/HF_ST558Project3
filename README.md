@@ -9,30 +9,25 @@ The following R packages used for this project:
 + [`DT`](https://rstudio.github.io/DT/)
 
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
-```{r}
+```
 library(rmarkdown)
-# get unique Education level
-EducationLv <- unique(diabetes$Education)
-# create filenames
-output_file <- paste0(EducationLv, ".html")
-# create a list for each team with just the team name parameter
-params = lapply(EducationLv, FUN = function(x){list(Edu = x)})
 
-# put into a data frame
+EducationLv <- unique(diabetes$Education)
+output_file <- paste0(EducationLv, ".html")
+params = lapply(EducationLv, FUN = function(x){list(Edu = x)})
 reports <- tibble::tibble(output_file, params)
 reports
-                 
-# need to use x[[1]] to get at elements since tibble doesn't simplify
 apply(reports, MARGIN = 1,
-      FUN = function(x){
-				render(input = "work.Rmd", 
+      FUN = function(x){render(input = "work.Rmd", 
 				output_file = x[[1]], 
 				params = x[[2]])
  				})
-                  
-```                  
+```
+ 				
+You can access the rendered documents:   
++ Analysis for [Non_Elementaty](Non_Elementary.html)    
++ Analysis for [SomeHighSchool](SomeHighSchool.html) 
++ Analysis for [HighSchool](HighSchool.html)  
++ Analysis for [SomeCollege](SomeCollege.html)  
++ Analysis for [College](College.html)  
 
-links to .html files of the generated analyses (which will be created by github pages! Not you!)  
-For example,
-+ Analysis for [work.md](work.html). 
-Note you should only have a college_graduate_analysis.md file in the repo - github pages will render the .html file for you
