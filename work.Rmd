@@ -3,6 +3,8 @@ title: "ST558_Project3"
 author: "Hui Fang"
 date: "2023-11-02"
 output: github_document
+params:
+   Edu: "Non_Elementary"
 ---
 
 ```{r setup, include=FALSE}
@@ -49,13 +51,32 @@ library(dplyr)
 library(readr)
 diabetes <- as_tibble(read.csv("diabetes_binary_health_indicators_BRFSS2015.csv", header = TRUE))
 head(diabetes)
-Diabetes_binary <- as.factor(diabetes$Diabetes_binary)
-Income <- factor(diabetes$Income, levels = c("1", "2", "3", "4", "5", "6", "7", "8"))
+# grouping Education levels
+diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2), "Non_Elementary",
+                         ifelse(diabetes$Education == 3, "SomeHighSchool", 
+                              ifelse(diabetes$Education == 4, "HighSchool",
+                                   ifelse(diabetes$Education == 5, "SomeCollege",
+                                        ifelse(diabetes$Education == 6, "College", NA)))))
+
+# Convert some variables to factor
+diabetes$Education <- as.factor(diabetes$Education)
+#diabetes$Diabetes_binary <- as.factor(diabetes$Diabetes_binary)
+#diabetes$Income <- as.factor(diabetes$Income)
+diabetes$HighBP <- as.factor(diabetes$HighBP)
+diabetes$HighChol <- as.factor(diabetes$HighChol)
+diabetes$Sex <- as.factor(diabetes$Sex)
+diabetes$Fruits <- as.factor(diabetes$Fruits)
+params$Edu
+```
+
+## Subsetting the dataset based on education level
+```{r}
+EducationData <- filter(diabetes, (Education == params$Edu))
 ```
 
 ## Subsetting the dataset based on education level
 
-```{r}
+```{r, eval=FALSE}
 # Never attended school or only kindergarten to Grades 1 through 8 (Elementary)
 diabetes2 <- diabetes %>% filter(Education %in% c(1, 2))
 
@@ -75,17 +96,51 @@ diabetes5 <- diabetes %>% filter(Education == 5)
 diabetes6 <- diabetes %>% filter(Education == 6)
 ```
 
-## EDA for diabetes3
+## EDA
 ```{r}
-# Checking missing values of columns in diabetes3
-missing_values <- colSums(is.na(diabetes3))
+# Checking missing values of columns in diabetes2
+missing_values <- colSums(is.na(EducationData))
 missing_values # no missing values
 # Describing 
 library(knitr)
-kable(summary(diabetes3))
+kable(summary(EducationData))
 ```
-result shows that there is no missing values in dataset diabetes3
+result shows that there is no missing values in dataset diabetes2
 
 ```{r}
-# Set the figure size (in inches)
-options(repr.plot.width = 8, repr.plot.height = 6)
+# Create a correlation matrix between variables
+Cor_Matrix <- EducationData %>% 
+         select(Diabetes_binary, BMI, MentHlth, PhysHlth, Age, Income) %>%
+         cor()
+
+# Round the correlation matrix to two decimal places
+rounded_Cor_Matrix <- round(Cor_Matrix, digits = 2)
+# Print the rounded correlation matrix
+kable(rounded_Cor_Matrix)
+```
+
+```{r, eval=FALSE, message = FALSE}
+#get unique Education level
+EducationLv <- unique(diabetes$Education)
+#create filenames
+output_file <- paste0(EducationLv, ".html")
+#create a list for each team with just the team name parameter
+params = lapply(EducationLv, FUN = function(x){list(Edu = x)})
+
+#put into a data frame
+reports <- tibble::tibble(output_file, params)
+reports
+```
+
+Now knit using apply() 
+```{r, eval = FALSE, echo = TRUE}
+# library(rmarkdown)
+# #need to use x[[1]] to get at elements since tibble doesn't simplify
+# apply(reports, MARGIN = 1,
+#       FUN = function(x){
+# 				render(
+# 				  input = "work.Rmd", 
+# 				  output_file = x[[1]], 
+# 				  params = x[[2]])
+#  				})
+```
