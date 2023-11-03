@@ -3,6 +3,8 @@ title: "ST558_Project3"
 author: "Hui Fang"
 date: "2023-11-02"
 output: github_document
+params:
+   Edu: "Non_Elementary"
 ---
 
 ```{r setup, include=FALSE}
@@ -51,46 +53,50 @@ library(dplyr)
 library(readr)
 diabetes <- as_tibble(read.csv("diabetes_binary_health_indicators_BRFSS2015.csv", header = TRUE))
 head(diabetes)
-
-# Convert Diabetes_binary and Income variables to factor
-Diabetes_binary <- as.factor(diabetes$Diabetes_binary)
-Income <- factor(diabetes$Income, levels = c("1", "2", "3", "4", "5", "6", "7", "8"))
 ```
+# grouping Education levels
+diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2), "Non_Elementary",
+                         ifelse(diabetes$Education == 3, "SomeHighSchool", 
+                              ifelse(diabetes$Education == 4, "HighSchool",
+                                   ifelse(diabetes$Education == 5, "SomeCollege",
+                                        ifelse(diabetes$Education == 6, "College", NA)))))
+
+# Convert some variables to factor
+diabetes$Education <- as.factor(diabetes$Education)
+#diabetes$Diabetes_binary <- as.factor(diabetes$Diabetes_binary)
+#diabetes$Income <- as.factor(diabetes$Income)
+diabetes$HighBP <- as.factor(diabetes$HighBP)
+diabetes$HighChol <- as.factor(diabetes$HighChol)
+diabetes$Sex <- as.factor(diabetes$Sex)
+diabetes$Fruits <- as.factor(diabetes$Fruits)
+params$Edu
 
 ## Subsetting the dataset based on education level
-
 ```{r}
-# Never attended school or only kindergarten to Grades 1 through 8 (Elementary)
-diabetes2 <- diabetes %>% filter(Education %in% c(1, 2))
-
-# Combine education level 1 and 2 to make it as 2
-diabetes2$Education <- ifelse(diabetes2$Education == 1, 2, 2)
-
-# Grades 9 through 11 (Some high school) 
-diabetes3 <- diabetes %>% filter(Education == 3)
-
-# Grade 12 or GED (High school graduate) 
-diabetes4 <- diabetes %>% filter(Education == 4)
-
-# College 1 year to 3 years (Some college or technical school) 
-diabetes5 <- diabetes %>% filter(Education == 5)
-
-# College 4 years or more (College graduate) 
-diabetes6 <- diabetes %>% filter(Education == 6)
+EducationData <- filter(diabetes, (Education == params$Edu))
+```
+## EDA
+```{r}
+# Checking missing values of columns in diabetes2
+missing_values <- colSums(is.na(EducationData))
 ```
 
-## EDA for diabetes for education 2
 ```{r}
-# Checking missing values of columns in diabetes3
-missing_values <- colSums(is.na(diabetes2))
-missing_values # no missing values
-
 # Describing 
 library(knitr)
-kable(summary(diabetes2))
+kable(summary(EducationData))
 ```
-result shows that there is no missing values in the dataset.
 
 ```{r}
-# Set the figure size (in inches)
-options(repr.plot.width = 8, repr.plot.height = 6)
+# Create a correlation matrix between variables
+Cor_Matrix <- EducationData %>% 
+         select(Diabetes_binary, BMI, MentHlth, PhysHlth, Age, Income) %>%
+         cor()
+
+# Round the correlation matrix to two decimal places
+rounded_Cor_Matrix <- round(Cor_Matrix, digits = 2)
+# Print the rounded correlation matrix
+kable(rounded_Cor_Matrix)
+```
+
+
