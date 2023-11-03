@@ -11,18 +11,18 @@ The following R packages used for this project:
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
 ```{r}
 library(rmarkdown)
-#get unique Education level
+# get unique Education level
 EducationLv <- unique(diabetes$Education)
-#create filenames
+# create filenames
 output_file <- paste0(EducationLv, ".html")
 #create a list for each team with just the team name parameter
 params = lapply(EducationLv, FUN = function(x){list(Edu = x)})
 
-#put into a data frame
+# put into a data frame
 reports <- tibble::tibble(output_file, params)
 reports
                  
-## #need to use x[[1]] to get at elements since tibble doesn't simplify
+# need to use x[[1]] to get at elements since tibble doesn't simplify
 apply(reports, MARGIN = 1,
       FUN = function(x){
 				render(input = "work.Rmd", 
