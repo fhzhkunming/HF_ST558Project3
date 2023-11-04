@@ -4,7 +4,7 @@ author: "Hui Fang and Joy Zhou"
 date: "2023-11-02"
 output: github_document
 params:
-      Edu: "Non_Elementary"
+      Edu: "SomeElementary"
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +20,7 @@ In this project, we will use the `diabetes binary health indicators` dataset obt
 Our analysis will primarily focus on a subset of key variables, including High blood pressure (HighBP), High cholesterol (HighChol), cholesterol check (CholCheck), Body Mass Index (BMI), Smoker, Fruits, Veggies, and Age.  
 In our EDA phase, we will start by summarizing basic statistics visualizing variable frequencies. This will be followed by the exploration of correlations between variables and the creation of contingency tables to better understand the interplay of these factors.  
 
-Based on the results from EDA, we will split the dataset into training (70%) and test (30%) subsets for each educational level. Subsequently, we will employ the training data to fit six distinct models, including a logistic regression, a LASSO logistic regression, a classification tree model, a random forest model, a xx model, as well as a xxx model. The performance of these models will be rigorously evaluated using the test dataset, and we will determine the most effective model for predicting diabetes outcomes.  
+Based on the results from EDA, we will split the dataset into training (70%) and test (30%) subsets for each educational level. Subsequently, we will employ the training data to fit six distinct models, including a logistic regression, a LASSO logistic regression, a classification tree model, a random forest model, a `partial least squares model`, as well as a `regularized logistic regression model`. The performance of these models will be rigorously evaluated using the test dataset, and we will determine the most effective model for predicting diabetes outcomes.  
   
 Description of variables in the data set:   
 + Diabetes_binary: 0 = no diabetes 1 = prediabetes or diabetes  
@@ -56,20 +56,12 @@ head(diabetes)
 ```
 # grouping Education levels
 ```{r}
-diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2), "Non_Elementary",
+diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2), "SomeElementary",
                          ifelse(diabetes$Education == 3, "SomeHighSchool", 
                               ifelse(diabetes$Education == 4, "HighSchool",
                                    ifelse(diabetes$Education == 5, "SomeCollege",
                                         ifelse(diabetes$Education == 6, "College", NA)))))
 
-# Convert some variables to factor
-diabetes$Education <- as.factor(diabetes$Education)
-#diabetes$Diabetes_binary <- as.factor(diabetes$Diabetes_binary)
-#diabetes$Income <- as.factor(diabetes$Income)
-diabetes$HighBP <- as.factor(diabetes$HighBP)
-diabetes$HighChol <- as.factor(diabetes$HighChol)
-diabetes$Sex <- as.factor(diabetes$Sex)
-diabetes$Fruits <- as.factor(diabetes$Fruits)
 params$Edu
 ```
 
@@ -79,17 +71,41 @@ EducationData <- filter(diabetes, (Education == params$Edu))
 ```
 
 ## EDA
+### Checking the missing values
 ```{r}
-# Checking missing values of columns in diabetes2
 missing_values <- colSums(is.na(EducationData))
 ```
-```{r}
-# Describing 
-library(knitr)
-kable(summary(EducationData))
-```
 
+### Summary statistics for numeric variables
 ```{r}
+library(dplyr)
+# Filter only numeric variables
+numeric_vars <- EducationData %>% select_if(is.numeric)
+# Create a summary table
+summary_table <- numeric_vars %>%
+  sapply(function(x) {
+    c( count = sum(!is.na(x)),
+      mean = mean(x, na.rm = TRUE),
+      std = sd(x, na.rm = TRUE),
+      min = min(x, na.rm = TRUE),
+      Q1 = quantile(x, 0.25, na.rm = TRUE),
+      median = median(x, na.rm = TRUE),
+      Q3 = quantile(x, 0.75, na.rm = TRUE),
+      max = max(x, na.rm = TRUE)
+    )
+  })
+# Transpose the summary table
+transposed_summary_table <- t(round(summary_table, 2)) 
+colnames(transposed_summary_table) <- c("count", "mean", "std", 
+                                        "min", "Q1", "median", "Q3", "max")
+# Print the transposed table
+knitr::kable(transposed_summary_table)
+```
+The center and spread of each variable can be found in this table.
+
+### Check the correlation between Diabetes_binary and the other variables
+```{r}
+library(knitr)
 # Create a correlation matrix between variables
 Cor_Matrix <- EducationData %>% 
          select(Diabetes_binary, BMI, MentHlth, PhysHlth, Age, Income) %>%
@@ -100,5 +116,139 @@ rounded_Cor_Matrix <- round(Cor_Matrix, digits = 2)
 # Print the rounded correlation matrix
 kable(rounded_Cor_Matrix)
 ```
+### Visualization of correlation with `Diabetes_binary` through bar graph
+```{r}
+# Load required libraries
+library(ggplot2)
+# Exclude the character variable from the data
+data <- EducationData[, !(names(EducationData) %in% "Education")]
 
+# Calculate the correlation of each variable with 'Diabetes_binary'
+correlations <- sapply(data[-1], function(x) cor(x, data$Diabetes_binary))
+
+# Create a data frame for the correlations
+correlation_data <- data.frame(Variable = names(correlations), Correlation = correlations)
+
+# Create a bar chart of correlations
+ggplot(correlation_data, aes(x = Variable, y = Correlation)) +
+  geom_bar(stat = "identity", fill = "orange") +
+  labs(title = "Correlation with Diabetes_binary", x = "Variable", y = "Correlation") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  # coord_flip()  # Rotate the x-axis labels for better readability
+```
+
+In this chart, some of the variables exhibited positive correlations with 'Diabetes_binary,' while others showed negative correlations with it.
+
+### Convert some variables to factor
+```{r}
+EducationData$Diabetes_binary <- factor(EducationData$Diabetes_binary, 
+                                       levels = c(0, 1),
+                                       labels = c("NonDiabetes", "Diabetes"))
+EducationData$Income <- as.factor(EducationData$Income)
+EducationData$Education <- as.factor(EducationData$Education)
+EducationData$HighBP <- factor(EducationData$HighBP,
+                               levels = c(0, 1),
+                               labels = c("NonHighBP", "HighBP"))
+EducationData$HighChol <- factor(EducationData$HighChol,levels = c(0, 1),
+                                 labels = c("NonHighChol", "HighCholesterol"))
+EducationData$Sex <- factor(EducationData$Sex,levels = c(0, 1), 
+                            labels = c("Female", "Male"))
+EducationData$Fruits <- factor(EducationData$Fruits,levels = c(0, 1), 
+                              labels = c("No", "Yes"))
+EducationData$Veggies <- factor(EducationData$Veggies,levels = c(0, 1),
+                                labels = c("No", "Yes"))
+EducationData$CholCheck <- as.factor(EducationData$CholCheck)
+EducationData$Smoker <- as.factor(EducationData$Smoker)
+EducationData$Stroke <- as.factor(EducationData$Stroke)
+EducationData$HeartDiseaseorAttack <- as.factor(EducationData$HeartDiseaseorAttack)
+EducationData$PhysActivity <- factor(EducationData$PhysActivity, levels = c(0, 1),
+                                       labels = c("No", "Yes"))
+EducationData$HvyAlcoholConsump <- as.factor(EducationData$HvyAlcoholConsump)
+EducationData$AnyHealthcare <- as.factor(EducationData$AnyHealthcare)
+EducationData$NoDocbcCost <- as.factor(EducationData$NoDocbcCost)
+EducationData$DiffWalk <- as.factor(EducationData$DiffWalk)
+```
+
+### Summary statistics for Character variables
+```{r}
+# one-way table
+kable(table(EducationData$Diabetes_binary))
+```
+
+```{r}
+kable(table(EducationData$HighBP))
+```
+
+```{r}
+# two-way table
+kable(table(EducationData$Diabetes_binary, EducationData$HighChol))
+```
+
+```{r}
+kable(table(EducationData$Diabetes_binary, EducationData$Fruits))
+```
+
+```{r}
+kable(table(EducationData$Diabetes_binary, EducationData$Veggies))
+```
+
+```{r}
+kable(table(EducationData$Diabetes_binary, EducationData$Sex))
+```
+
+```{r}
+# Three-way table
+kable(table(EducationData$Diabetes_binary, EducationData$HighBP, EducationData$Sex))
+```
+
+### Graphical Summaries
+
+
+#### Checking The relation B/W HighBP and Diabetes
+```{r}
+# # Create a bar plot of Diabetes by HighBp
+# g1 <- ggplot(EducationData, aes(x = HighBP, y = Diabetes_binary, fill = Diabetes_binary)) +
+# geom_bar(stat = "summary", fun = "sum") +
+#   scale_y_continuous(labels = scales::percent) +
+#   labs(title = "Diabetes Disease Frequency for HighBP",
+#      x = "High Blood Press",
+#      y = "Frequency") +
+# theme_minimal() +
+# theme(legend.position = "none",
+# text = element_text(size = 8)) # Hide the legend
+# 
+# g1
+# 
+# g2 <- ggplot(bikeTrain, aes(x = Holiday, y = RentedBike, fill = Holiday)) +
+# geom_bar(stat = "summary", fun = "sum") +
+# labs(title = "Total Rented Bike Count by Holiday",
+# x = "Holiday",
+# y = "Rented Bike Count") +
+# theme_minimal() +
+# theme(legend.position = "none",
+# text = element_text(size = 8)) # Hide the legend
+# g3 <- ggplot(bikeTrain, aes(x = FunctionDay, y = RentedBike, fill = FunctionDay)) +
+# geom_bar(stat = "summary", fun = "sum") +
+# labs(title = "Rented Bike Count by Functioning Day",
+# x = "Functioning Day",
+# y = "Total Rented Bike Count") +
+# theme_minimal() +
+# theme(legend.position = "none",
+# text = element_text(size = 8)) # Hide the legend
+# 6
+# g4 <- ggplot(bikeTrain, aes(x = Hour, y = RentedBike, fill = Hour)) +
+# geom_bar(stat = "summary", fun = "sum") +
+# labs(title = "Rented Bike Count by Hour of the Day",
+# x = "Hour",
+# y = "Average Rented Bike Count") +
+# theme_minimal() +
+# theme(legend.position = "none",
+# text = element_text(size = 8)) # Hide the legend
+# # Arrange the plots into a 2x2 gird using cowplot
+# combined_plots <- plot_grid(g1, g2, g3, g4,
+# ncol = 2
+# )
+# # Print the combined plots
+# combined_plots
+```
 
