@@ -1,6 +1,10 @@
 ST558_Project3
 ================
+<<<<<<< Updated upstream
 Hui Fang and Joy Zhou
+=======
+Hui and Joy
+>>>>>>> Stashed changes
 2023-11-02
 
 # Introduction

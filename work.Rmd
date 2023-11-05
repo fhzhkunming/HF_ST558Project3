@@ -1,6 +1,10 @@
 ---
 title: "ST558_Project3"
+<<<<<<< Updated upstream
 author: "Hui Fang and Joy Zhou"
+=======
+author: "Hui and Joy"
+>>>>>>> Stashed changes
 date: "2023-11-02"
 output: github_document
 params:
@@ -22,7 +26,11 @@ In our EDA phase, we will start by summarizing basic statistics visualizing vari
 
 Based on the results from EDA, we will split the dataset into training (70%) and test (30%) subsets for each educational level. Subsequently, we will employ the training data to fit six distinct models, including a logistic regression, a LASSO logistic regression, a classification tree model, a random forest model, a `partial least squares model`, as well as a `regularized logistic regression model`. The performance of these models will be rigorously evaluated using the test dataset, and we will determine the most effective model for predicting diabetes outcomes.  
   
+<<<<<<< Updated upstream
 Description of variables in the data set:   
+=======
+Description of variables in the data set:  
+>>>>>>> Stashed changes
 + Diabetes_binary: 0 = no diabetes 1 = prediabetes or diabetes  
 + HighBP: High blood pressure  
 + HighChol: High cholesterol   
