@@ -1,6 +1,6 @@
 ---
 title: "ST558_Project3"
-author: "Hui Fang and Joy Zhou"
+author: "Hui and Joy"
 date: "2023-11-02"
 output: github_document
 params:
@@ -22,6 +22,7 @@ In our EDA phase, we will start by summarizing basic statistics visualizing vari
 
 Based on the results from EDA, we will split the dataset into training (70%) and test (30%) subsets for each educational level. Subsequently, we will employ the training data to fit six distinct models, including a logistic regression, a LASSO logistic regression, a classification tree model, a random forest model, a `partial least squares model`, as well as a `regularized logistic regression model`. The performance of these models will be rigorously evaluated using the test dataset, and we will determine the most effective model for predicting diabetes outcomes.  
   
+
 Description of variables in the data set:   
 + Diabetes_binary: 0 = no diabetes 1 = prediabetes or diabetes  
 + HighBP: High blood pressure  
@@ -54,7 +55,8 @@ library(readr)
 diabetes <- as_tibble(read.csv("diabetes_binary_health_indicators_BRFSS2015.csv", header = TRUE))
 head(diabetes)
 ```
-## grouping Education levels
+
+## Grouping education levels
 ```{r}
 diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2), "SomeElementary",
                          ifelse(diabetes$Education == 3, "SomeHighSchool", 
@@ -77,7 +79,7 @@ missing_values <- colSums(is.na(EducationData))
 ```
 
 ## Summary statistics for numeric variables
-```{r}
+```{r, warning=FALSE}
 library(dplyr)
 # Filter only numeric variables
 numeric_vars <- EducationData %>% select_if(is.numeric)
@@ -118,8 +120,7 @@ kable(rounded_Cor_Matrix)
 ```
 
 ## Visualization of correlation with `Diabetes_binary` through bar graph
-```{r}
-# Load required libraries
+```{r, warning=FALSE}
 library(ggplot2)
 # Exclude the character variable from the data
 data <- EducationData[, !(names(EducationData) %in% "Education")]
@@ -169,10 +170,6 @@ EducationData$AnyHealthcare <- as.factor(EducationData$AnyHealthcare)
 EducationData$NoDocbcCost <- as.factor(EducationData$NoDocbcCost)
 EducationData$DiffWalk <- factor(EducationData$DiffWalk, levels = c(0, 1),
                                        labels = c("No", "Yes"))
-# EducationData$GenHlth <- factor(EducationData$GenHlth, 
-#                                 levels = c(1, 2, 3, 4, 5),
-#                                 labels = c("Excellent", "Very good", "Good", "Fair", "Poor"))
-
 ```
 
 ## Summary statistics for Character variables
@@ -254,7 +251,6 @@ combined_plots <- plot_grid(g1, g2, g3, g4,
 # Print the combined plots
 combined_plots
 ```
-
 
 ```{r}
 library(ggplot2)
@@ -342,3 +338,198 @@ complots <- plot_grid(g11, g12, ncol = 2,
                       labels = c("a", "b"))
 # Print the combined plots
 complots
+=======
+### Graphical Summaries
+
+#### Checking The relation B/W HighBP and Diabetes
+
+
+# Modeling   
+## Split the data  
+```{r, message=FALSE}
+library(caret)
+library(lattice)
+
+# set seed for reproducibility
+set.seed(123)
+
+# Create a data partition for training (70%) and testing (30%) data
+intrain <- createDataPartition(y = EducationData$Diabetes_binary,
+                                 p = 0.70,
+                                 list = FALSE
+                                 )
+# Create the training data set using the partition
+train_set <- EducationData[intrain,]
+
+# Create the testing data set using he partition
+test_set <- EducationData[-intrain,]
+```  
+## Summarize and fit models  
+### What is **log loss** and why may we prefer it to things like accuracy?  
+**Log loss**, also known as logistic loss or cross-entropy loss, is a loss function used in classification problems to evaluate the performance of a model, especially in scenarios with binary response variables. It quantifies the performance of a model by measuring the difference between the predicted probability distribution produced by the model and the actual probability distribution. Log loss is calculated as the negative logarithm of the predicted probability assigned to the true class label. It penalizes the model for incorrect predictions and a lower log loss value indicates better model predictive performance.  
+
+**Accuracy**, on the other hand, is a metric used to evaluate classification model performance by measuring the percentage of correctly classified instances. While accuracy is a useful metric, it can be misleading in some cases. For example, in imbalanced datasets where one class significantly outweighs the other, a model that always predicts the majority class will yield high accuracy but may not be practically useful. In such cases, log loss can offer a more reliable metric as it considers the model’s predictions uncertainty.  
+
+In summary, log loss is a preferred metric over accuracy when the data is imbalanced or when the cost of false positives and false negatives is different.  
+
+### Logistic Regression Model  
+- What is a **logistic regression** and why we apply it to this kind of data?  
+
+A **logistic regression model** is a statistical method used for analyzing the relationship between a binary outcome variable and one or more predictor variables. It is commonly used in classification problems, where the goal is to predict one of two possible outcomes, typically represented as 0 and 1 or “Yes” and “No”.  
+
+The relationship between response variable and the predictor variables is evaluated using the logistic function (also known as the sigmoid function), which ensures that the predicted probabilities fall between 0 and 1. The model parameters are estimated using a process called maximum likelihood estimation. The key output of a logistic regression model includes the coefficients (log-odds) associated with each predictor variable, which describe the strength and direction of their influence on the probability of the outcome.  
+
+Logistic regression is designed to handle categorical dependent variables. In our situation, Diabetes_binary is a binary variable and is suitable for fitting logistic regression model.  
+
+- Fit Logistic Regression Models
+```{r}
+library(caret)
+library(Metrics)
+# Fit the logistic regression models
+log_reg1 <- train(Diabetes_binary ~ HighBP + HighChol + CholCheck + 
+                    Smoker + Fruits + Veggies + Sex + Income, 
+               data = train_set, 
+               family = "binomial",
+               method = "glm",
+               preProcess = c("center", "scale"),
+               trControl = trainControl(method = "cv", number = 5),
+               metric = "Accuracy",  
+               trace = FALSE
+               )
+
+log_reg2 <- train(Diabetes_binary ~ HighBP*HighChol*CholCheck + 
+                    Smoker + Fruits + Veggies + Sex + Income, 
+               data = train_set, 
+               family = "binomial",
+               method = "glm",
+               preProcess = c("center", "scale"),
+               trControl = trainControl(method = "cv", number = 5),
+               metric = "Accuracy",  
+               trace = FALSE
+               )
+
+log_reg3 <- train(Diabetes_binary ~ HighBP + HighChol + 
+                    CholCheck + Smoker, 
+               data = train_set, 
+               family = "binomial",
+               method = "glm",
+               preProcess = c("center", "scale"),
+               trControl = trainControl(method = "cv", number = 5),
+               metric = "Accuracy",  
+               trace = FALSE
+               )
+
+# Print the model results
+log_reg1
+log_reg2
+log_reg3
+
+# Test the model
+predicted_test1 <- predict(log_reg1, newdata = test_set, type = "prob")
+predicted_test2 <- predict(log_reg2, newdata = test_set, type = "prob")
+predicted_test3 <- predict(log_reg3, newdata = test_set, type = "prob")
+
+# convert Diabetes_binary factors to numeric and calculate log loss.
+test_set$Diabetes_binary <- as.numeric(test_set$Diabetes_binary)
+log_loss1 <- logLoss(test_set$Diabetes_binary, predicted_test1$Diabetes)
+log_loss2 <- logLoss(test_set$Diabetes_binary, predicted_test2$Diabetes)
+log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_test3$Diabetes)
+
+# Print the logLoss values
+log_loss1
+log_loss2
+log_loss3
+```  
+Based on the model fitting results, we select the one with higher Accuracy and lower log loss values.
+
+### LASSO Logistic Regression Model  
+- What is a **LASSO logistic regression** and why we might try to use it over basic logistic regression?  
+
+**LASSO** (`least absolute shrinkage and selection operator`) is a regression analysis method that performs both variable selection and regularization to enhance the prediction accuracy and interpretability of the resulting statistical model. It uses `glmnet` package in R to fit the model.  
+
+The primary goal of LASSO regression is to find a balance between model simplicity and accuracy. It achieves this by adding a penalty term to the traditional linear regression model, which encourages sparse solutions where some coefficients are forced to be exactly zero. This feature makes LASSO particularly useful for feature selection, as it can automatically identify and discard irrelevant or redundant variables. That’s why we might try to use LASSO logistic regression over basic logistic regression.  
+
+- Fit a LASSO Logistic Regression Model
+```{r, warning=FALSE}
+library(glmnet)
+
+# Select variables for fitting the model
+predictors <- c("HighBP", "HighChol", "CholCheck", 
+                "BMI", "Smoker", "Stroke", "PhysActivity",
+                "HvyAlcoholConsump", "GenHlth", "MentHlth", 
+                "PhysHlth", "Sex", "Age", "Income"
+)
+
+# Create a train control object for cross-validation
+ctrl <- trainControl(method = "cv", # Cross-validation method (k-fold)
+                     number = 5, # Number of cross-validation folds
+                     verboseIter = FALSE
+)
+
+lambdas <- c(seq(0, 2, length = 3))
+
+# Fit a Lasso model
+lasso_fit <- train(Diabetes_binary ~ .,
+                   data = train_set[, c("Diabetes_binary", predictors)],
+                   method = "glmnet",
+                   trControl = ctrl,
+                   tuneGrid = expand.grid(alpha = 1, lambda = 0), # Alpha = 1 for LASSO
+                   metric = "logLoss" # Use logLoss metric for evaluation
+)
+
+# Predict probabilities on the test set
+predicted_lasso <- predict(lasso_fit, newdata = test_set, type = "prob")
+
+# Calculate LogLoss manually
+log_loss <- logLoss(test_set$Diabetes_binary, predicted_lasso$Diabetes)
+
+# Print the log loss value
+log_loss
+```
+
+### Classification Tree Model  
+- What is a **classification tree model** and why we might try to use it?  
+
+A **classification tree model** is a type of supervised learning algorithm used in statistics, data mining, and machine learning. It is used to predict the value of a categorical response variable based on one or more predictor variables. The model is built by recursively partitioning the data into smaller and smaller subsets, with each partition being based on a different predictor variable. The result is a tree-like structure where each internal node represents a test on a predictor variable, each branch represents the outcome of the test, and each leaf node represents a predicted value for the response variable. The tree is constructed in such a way that the most important predictor variables are at the top of the tree, and the least important ones are at the bottom. The goal of the algorithm is to create a tree that is as small as possible while still accurately predicting the response variable.  
+
+Classification trees are a powerful and flexible machine learning algorithm that can be used for both classification and regression problems. They are particularly useful when the data has non-linear relationships, variable interactions, or outliers, and when interpretability is important. However, classification trees also have limitations, such as being prone to overfitting when they become too complex. To address, ensemble techniques like random forests and gradient boosting are often used to to enhance their performance.  
+
+- Fit a Classification Tree Model  
+```{r}
+
+```
+
+### Random Forest 
+- What is a **random forest** and why we might use it instead of a basic classification tree?  
+
+A **random forest regression model**, also known as a random forest, is a versatile machine learning algorithm used for both regression and classification tasks. It is an ensemble technique that uses multiple decision trees to make predictions. In this model, each decision tree is trained on a different subset of the data, and the final output is the average of all the outputs of the individual decision trees. This technique helps to reduce overfitting and improve the accuracy of the model. Random forest can predict continuous values, such as stock prices, temperature, or sales figures, as well as performing classification variables.  
+
+Random forests have several advantages over the basic decision trees: reduced overfitting, improved accuracy, less sensitive to outliers, and identifying the most important predictors and improving the interpretability of the model. Therefore, we prefer random forest over basic classification trees.  
+
+- Fit a random forest model
+```{r}
+
+```
+
+### Partial Least Squares Model  
+- A summary of a **partial least squares model**  
+
+A **partial least squares (PLS) model** is a supervised learning algorithm used to model the relationship between two sets of variables. The PLS model is used when there are multicollinearity, i.e., the explanatory variables are correlated, and high dimensionality in the data. PLS allows us to reduce the dimensionality of correlated variables and model the underlying, shared, information of those variables (in both dependent and independent variables). Moreover, PLS can model multiple outcome variables, which many statistics and machine learning models cannot directly deal with. 
+
+- Fit a partial least squares model
+```{r}
+
+```  
+### Regularized Logistic Regression Model
+
+- A summary of **regularized logistic regression**  
+
+A **regularized logistic regression model** is a variation of logistic regression that includes regularization techniques to prevent overfitting and improve the model's generalization ability. It's used for binary classification problems, where the goal is to predict one of two possible outcomes.  
+
+Regularized logistic regression is particularly useful when dealing with high-dimensional data with many predictor variables. It helps to improve model performance, maintain model simplicity, and select the most relevant features. It's commonly used in machine learning and data analysis when dealing with classification problems, especially when overfitting is a concern.  
+
+- Fit a regularized logistic regression model
+```{r}
+
+```
+

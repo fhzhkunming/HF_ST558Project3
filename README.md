@@ -7,6 +7,8 @@ The following R packages used for this project:
 + [`caret`](https://cran.r-project.org/web/packages/caret/)
 + [`shiny`](https://cran.r-project.org/web/packages/shiny/index.html)
 + [`DT`](https://rstudio.github.io/DT/)
++ [`metrics`](https://cran.r-project.org/web/packages/Metrics/index.html)
++ [`glmnet`](https://cran.r-project.org/web/packages/glmnet/index.html)
 
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
 ```
