@@ -106,7 +106,7 @@ head(diabetes)
     ## #   NoDocbcCost <dbl>, GenHlth <dbl>, MentHlth <dbl>, PhysHlth <dbl>,
     ## #   DiffWalk <dbl>, Sex <dbl>, Age <dbl>, Education <dbl>, Income <dbl>
 
-# grouping Education levels
+## grouping Education levels
 
 ``` r
 diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2), "SomeElementary",
@@ -126,15 +126,15 @@ params$Edu
 EducationData <- filter(diabetes, (Education == params$Edu))
 ```
 
-## EDA
+# EDA
 
-### Checking the missing values
+## Checking the missing values
 
 ``` r
 missing_values <- colSums(is.na(EducationData))
 ```
 
-### Summary statistics for numeric variables
+## Summary statistics for numeric variables
 
 ``` r
 library(dplyr)
@@ -187,13 +187,13 @@ knitr::kable(transposed_summary_table)
 
 The center and spread of each variable can be found in this table.
 
-### Check the correlation between Diabetes_binary and the other variables
+## Check the correlation between `Diabetes_binary` and the other variables
 
 ``` r
 library(knitr)
 # Create a correlation matrix between variables
 Cor_Matrix <- EducationData %>% 
-         select(Diabetes_binary, BMI, MentHlth, PhysHlth, Age, Income) %>%
+         select(Diabetes_binary, BMI, GenHlth, MentHlth, PhysHlth, Age, Income) %>%
          cor()
 
 # Round the correlation matrix to two decimal places
@@ -202,16 +202,17 @@ rounded_Cor_Matrix <- round(Cor_Matrix, digits = 2)
 kable(rounded_Cor_Matrix)
 ```
 
-|                 | Diabetes_binary |   BMI | MentHlth | PhysHlth |   Age | Income |
-|:----------------|----------------:|------:|---------:|---------:|------:|-------:|
-| Diabetes_binary |            1.00 |  0.17 |     0.10 |     0.16 |  0.16 |  -0.15 |
-| BMI             |            0.17 |  1.00 |     0.07 |     0.08 | -0.12 |  -0.05 |
-| MentHlth        |            0.10 |  0.07 |     1.00 |     0.40 | -0.08 |  -0.15 |
-| PhysHlth        |            0.16 |  0.08 |     0.40 |     1.00 |  0.07 |  -0.19 |
-| Age             |            0.16 | -0.12 |    -0.08 |     0.07 |  1.00 |  -0.12 |
-| Income          |           -0.15 | -0.05 |    -0.15 |    -0.19 | -0.12 |   1.00 |
+|                 | Diabetes_binary |   BMI | GenHlth | MentHlth | PhysHlth |   Age | Income |
+|:----------------|----------------:|------:|--------:|---------:|---------:|------:|-------:|
+| Diabetes_binary |            1.00 |  0.17 |    0.26 |     0.10 |     0.16 |  0.16 |  -0.15 |
+| BMI             |            0.17 |  1.00 |    0.10 |     0.07 |     0.08 | -0.12 |  -0.05 |
+| GenHlth         |            0.26 |  0.10 |    1.00 |     0.31 |     0.51 |  0.08 |  -0.26 |
+| MentHlth        |            0.10 |  0.07 |    0.31 |     1.00 |     0.40 | -0.08 |  -0.15 |
+| PhysHlth        |            0.16 |  0.08 |    0.51 |     0.40 |     1.00 |  0.07 |  -0.19 |
+| Age             |            0.16 | -0.12 |    0.08 |    -0.08 |     0.07 |  1.00 |  -0.12 |
+| Income          |           -0.15 | -0.05 |   -0.26 |    -0.15 |    -0.19 | -0.12 |   1.00 |
 
-### Visualization of correlation with `Diabetes_binary` through bar graph
+## Visualization of correlation with `Diabetes_binary` through bar graph
 
 ``` r
 # Load required libraries
@@ -242,14 +243,13 @@ In this chart, some of the variables exhibited positive correlations
 with ‘Diabetes_binary,’ while others showed negative correlations with
 it.
 
-### Convert some variables to factor
+## Convert some variables to factor
 
 ``` r
 EducationData$Diabetes_binary <- factor(EducationData$Diabetes_binary, 
                                        levels = c(0, 1),
                                        labels = c("NonDiabetes", "Diabetes"))
-EducationData$Income <- as.factor(EducationData$Income)
-EducationData$Education <- as.factor(EducationData$Education)
+# EducationData$Income <- as.factor(EducationData$Income)
 EducationData$HighBP <- factor(EducationData$HighBP,
                                levels = c(0, 1),
                                labels = c("NonHighBP", "HighBP"))
@@ -262,7 +262,8 @@ EducationData$Fruits <- factor(EducationData$Fruits,levels = c(0, 1),
 EducationData$Veggies <- factor(EducationData$Veggies,levels = c(0, 1),
                                 labels = c("No", "Yes"))
 EducationData$CholCheck <- as.factor(EducationData$CholCheck)
-EducationData$Smoker <- as.factor(EducationData$Smoker)
+EducationData$Smoker <- factor(EducationData$Smoker, levels = c(0, 1),
+                                labels = c("No", "Yes"))
 EducationData$Stroke <- as.factor(EducationData$Stroke)
 EducationData$HeartDiseaseorAttack <- as.factor(EducationData$HeartDiseaseorAttack)
 EducationData$PhysActivity <- factor(EducationData$PhysActivity, levels = c(0, 1),
@@ -270,12 +271,17 @@ EducationData$PhysActivity <- factor(EducationData$PhysActivity, levels = c(0, 1
 EducationData$HvyAlcoholConsump <- as.factor(EducationData$HvyAlcoholConsump)
 EducationData$AnyHealthcare <- as.factor(EducationData$AnyHealthcare)
 EducationData$NoDocbcCost <- as.factor(EducationData$NoDocbcCost)
-EducationData$DiffWalk <- as.factor(EducationData$DiffWalk)
+EducationData$DiffWalk <- factor(EducationData$DiffWalk, levels = c(0, 1),
+                                       labels = c("No", "Yes"))
+# EducationData$GenHlth <- factor(EducationData$GenHlth, 
+#                                 levels = c(1, 2, 3, 4, 5),
+#                                 labels = c("Excellent", "Very good", "Good", "Fair", "Poor"))
 ```
 
-### Summary statistics for Character variables
+## Summary statistics for Character variables
 
 ``` r
+library(knitr)
 # one-way table
 kable(table(EducationData$Diabetes_binary))
 ```
@@ -347,53 +353,162 @@ kable(table(EducationData$Diabetes_binary, EducationData$HighBP, EducationData$S
 | NonDiabetes | HighBP    | Male   |  687 |
 | Diabetes    | HighBP    | Male   |  398 |
 
-### Graphical Summaries
+## Graphical Summaries
 
-#### Checking The relation B/W HighBP and Diabetes
+### Bar plots
 
 ``` r
-# # Create a bar plot of Diabetes by HighBp
-# g1 <- ggplot(EducationData, aes(x = HighBP, y = Diabetes_binary, fill = Diabetes_binary)) +
-# geom_bar(stat = "summary", fun = "sum") +
-#   scale_y_continuous(labels = scales::percent) +
-#   labs(title = "Diabetes Disease Frequency for HighBP",
-#      x = "High Blood Press",
-#      y = "Frequency") +
-# theme_minimal() +
-# theme(legend.position = "none",
-# text = element_text(size = 8)) # Hide the legend
-# 
-# g1
-# 
-# g2 <- ggplot(bikeTrain, aes(x = Holiday, y = RentedBike, fill = Holiday)) +
-# geom_bar(stat = "summary", fun = "sum") +
-# labs(title = "Total Rented Bike Count by Holiday",
-# x = "Holiday",
-# y = "Rented Bike Count") +
-# theme_minimal() +
-# theme(legend.position = "none",
-# text = element_text(size = 8)) # Hide the legend
-# g3 <- ggplot(bikeTrain, aes(x = FunctionDay, y = RentedBike, fill = FunctionDay)) +
-# geom_bar(stat = "summary", fun = "sum") +
-# labs(title = "Rented Bike Count by Functioning Day",
-# x = "Functioning Day",
-# y = "Total Rented Bike Count") +
-# theme_minimal() +
-# theme(legend.position = "none",
-# text = element_text(size = 8)) # Hide the legend
-# 6
-# g4 <- ggplot(bikeTrain, aes(x = Hour, y = RentedBike, fill = Hour)) +
-# geom_bar(stat = "summary", fun = "sum") +
-# labs(title = "Rented Bike Count by Hour of the Day",
-# x = "Hour",
-# y = "Average Rented Bike Count") +
-# theme_minimal() +
-# theme(legend.position = "none",
-# text = element_text(size = 8)) # Hide the legend
-# # Arrange the plots into a 2x2 gird using cowplot
-# combined_plots <- plot_grid(g1, g2, g3, g4,
-# ncol = 2
-# )
-# # Print the combined plots
-# combined_plots
+library(ggplot2)
+library(cowplot)
+# Checking The relation B/W HighBP and Diabetes
+g1 <- ggplot(data = EducationData, aes(x = HighBP, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar(position = "dodge") +
+             labs(title = "Diabetes Frequency for High Blood Pressure",
+                  x = "High Blood Pressure",
+                  y = "Frequency") + theme_minimal() +
+            theme(text = element_text(size = 8)) 
+# Checking The relation B/W HighChol and Diabetes
+g2 <- ggplot(data = EducationData, aes(x = HighChol, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar(position = "dodge") +
+               labs(title = "Diabetes Frequency for High Cholesterol",
+                    x = "High Cholesterol",
+                    y = "Frequency") + theme_minimal() +
+
+            theme(legend.position = "none",
+                  text = element_text(size = 8)) # Hide the legend
+g3 <- ggplot(data = EducationData, aes(x = DiffWalk, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar(position = "dodge") +
+             labs(title = "Diabetes Frequency for Difficult Walking",
+                  x = "Difficult Walking",
+                  y = "Frequency") + theme_minimal() +
+            theme(legend.position = "none",
+                  text = element_text(size = 8)) # Hide the legend
+g4 <- ggplot(data = EducationData, aes(x = Smoker, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar(position = "dodge") +
+             labs(title = "Diabetes Frequency for Smoker",
+                  x = "Smoker",
+                  y = "Frequency")  + theme_minimal() +
+            theme(legend.position = "none",
+                  text = element_text(size = 8)) # Hide the legend           
+# Arrange the plots into a 2x2 gird using cowplot
+combined_plots <- plot_grid(g1, g2, g3, g4,
+                            ncol = 2,
+                            labels = c("a", "b", "c", "d"))
+# Print the combined plots
+combined_plots
 ```
+
+![](work_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+``` r
+library(ggplot2)
+# Define labels for 'GenHlth'
+genhlth_labels <- c("Excellent", "Very Good", "Good", "Fair", "Poor")
+
+# Create a plot with two facets (subplots)
+g5 <- ggplot(EducationData, aes(x = factor(GenHlth, levels = 1:5, labels = genhlth_labels), 
+                               fill = Diabetes_binary)) +
+  geom_bar(position = 'dodge', alpha = 0.5, width = 0.5) +
+  facet_wrap(~ Diabetes_binary, ncol = 2) +
+  labs(title = 'General Health Conditions Distribution', x = NULL, y = 'Count') +
+  theme_minimal() +
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none", axis.text.x = element_text(size = 8))
+g5
+```
+
+![](work_files/figure-gfm/unnamed-chunk-17-1.png)<!-- --> BMI
+distribution
+
+``` r
+g6 <- ggplot(data = EducationData, aes(x = BMI, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar() +
+             labs(title = "BMI distribution",
+                  x = "BMI",
+                  y = "Count")  + theme_minimal() +
+            theme(legend.position = "none",
+                  text = element_text(size = 8)) 
+g6
+```
+
+![](work_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+### Box plots
+
+``` r
+library(gridExtra)
+```
+
+    ## 
+    ## Attaching package: 'gridExtra'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     combine
+
+``` r
+g7 <- ggplot(EducationData, aes(x = Diabetes_binary, y = BMI, fill = Diabetes_binary)) +
+     geom_boxplot() +
+     labs(title = "BMI Distribution vs. Diabetes",
+       x = "Diabetes_binary",
+       y = "BMI") +
+     theme(text = element_text(size = 8)) 
+g8 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Age, fill = Diabetes_binary)) +
+      geom_boxplot() +
+  labs(title = "Age Distribution vs. Diabetes",
+       x = "Diabetes_binary",
+       y = "Age") +
+  theme(text = element_text(size = 8)) 
+g9 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Income, fill = Diabetes_binary)) +
+      geom_boxplot() +
+  labs(title = "Income Distribution vs. Diabetes",
+       x = "Diabetes_binary",
+       y = "Income") +
+  theme(text = element_text(size = 8))
+g10 <- ggplot(EducationData, aes(x = Diabetes_binary, y = MentHlth, fill = Diabetes_binary)) +
+      geom_boxplot() +
+  labs(title = "Mental Health Distribution vs. Diabetes",
+       x = "Diabetes_binary",
+       y = "Mental Health") +
+  theme(text = element_text(size = 8)) 
+# Arrange the plots into a 2x2 gird using cowplot
+complots <- plot_grid(g7, g8, g9, g10,
+                            ncol = 2,
+                            labels = c("a", "b", "c", "d"))
+# Print the combined plots
+complots
+```
+
+![](work_files/figure-gfm/unnamed-chunk-19-1.png)<!-- --> \### Density
+plots
+
+``` r
+g11 <- ggplot(EducationData, aes(x = Income)) +
+           geom_density(adjust = 0.5, alpha = 0.5, 
+                        aes(fill = Diabetes_binary), position = "stack") +
+          labs(title = "Distribution of Income vs. Diabetes",
+               x = "Diabetes_binary",
+               y = "Density") +
+          theme(legend.position = "none", 
+                text = element_text(size = 8))
+  
+g12 <- ggplot(EducationData, aes(x = Age)) +
+           geom_density(adjust = 0.5, alpha = 0.5, 
+                        aes(fill = Diabetes_binary), position = "stack") +
+          labs(title = "Distribution of Age vs. Diabetes",
+               x = "Age",
+               y = "Density") +
+  theme(text = element_text(size = 8))
+# Arrange the plots into a 2x2 gird using cowplot
+complots <- plot_grid(g11, g12, ncol = 2,
+                      labels = c("a", "b"))
+# Print the combined plots
+complots
+```
+
+![](work_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
