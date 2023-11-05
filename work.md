@@ -351,53 +351,6 @@ kable(table(EducationData$Diabetes_binary, EducationData$HighBP, EducationData$S
 
 #### Checking The relation B/W HighBP and Diabetes
 
-``` r
-# # Create a bar plot of Diabetes by HighBp
-# g1 <- ggplot(EducationData, aes(x = HighBP, y = Diabetes_binary, fill = Diabetes_binary)) +
-# geom_bar(stat = "summary", fun = "sum") +
-#   scale_y_continuous(labels = scales::percent) +
-#   labs(title = "Diabetes Disease Frequency for HighBP",
-#      x = "High Blood Press",
-#      y = "Frequency") +
-# theme_minimal() +
-# theme(legend.position = "none",
-# text = element_text(size = 8)) # Hide the legend
-# 
-# g1
-# 
-# g2 <- ggplot(bikeTrain, aes(x = Holiday, y = RentedBike, fill = Holiday)) +
-# geom_bar(stat = "summary", fun = "sum") +
-# labs(title = "Total Rented Bike Count by Holiday",
-# x = "Holiday",
-# y = "Rented Bike Count") +
-# theme_minimal() +
-# theme(legend.position = "none",
-# text = element_text(size = 8)) # Hide the legend
-# g3 <- ggplot(bikeTrain, aes(x = FunctionDay, y = RentedBike, fill = FunctionDay)) +
-# geom_bar(stat = "summary", fun = "sum") +
-# labs(title = "Rented Bike Count by Functioning Day",
-# x = "Functioning Day",
-# y = "Total Rented Bike Count") +
-# theme_minimal() +
-# theme(legend.position = "none",
-# text = element_text(size = 8)) # Hide the legend
-# 6
-# g4 <- ggplot(bikeTrain, aes(x = Hour, y = RentedBike, fill = Hour)) +
-# geom_bar(stat = "summary", fun = "sum") +
-# labs(title = "Rented Bike Count by Hour of the Day",
-# x = "Hour",
-# y = "Average Rented Bike Count") +
-# theme_minimal() +
-# theme(legend.position = "none",
-# text = element_text(size = 8)) # Hide the legend
-# # Arrange the plots into a 2x2 gird using cowplot
-# combined_plots <- plot_grid(g1, g2, g3, g4,
-# ncol = 2
-# )
-# # Print the combined plots
-# combined_plots
-```
-
 # Modeling
 
 ## Split the data

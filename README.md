@@ -27,7 +27,8 @@ apply(reports, MARGIN = 1,
  				})
 ```
  				
-You can access the rendered documents:   
+You can access the rendered documents:
++ Analysis for [work.md](work.html)
 + Analysis for [SomeElementaty](SomeElementary.html)    
 + Analysis for [SomeHighSchool](SomeHighSchool.html) 
 + Analysis for [HighSchool](HighSchool.html)  
