@@ -7,6 +7,7 @@ The following R packages used for this project:
 + [`caret`](https://cran.r-project.org/web/packages/caret/)
 + [`shiny`](https://cran.r-project.org/web/packages/shiny/index.html)
 + [`DT`](https://rstudio.github.io/DT/)
++ [`cowplot`](https://cran.r-project.org/web/packages/cowplot/index.html)
 
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
 ```
@@ -25,7 +26,8 @@ apply(reports, MARGIN = 1,
  				})
 ```
  				
-You can access the rendered documents:   
+You can access the rendered documents:
++ Analysis for [work.md](work.html)
 + Analysis for [SomeElementaty](SomeElementary.html)    
 + Analysis for [SomeHighSchool](SomeHighSchool.html) 
 + Analysis for [HighSchool](HighSchool.html)  
