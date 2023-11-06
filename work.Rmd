@@ -277,8 +277,8 @@ g6 <- ggplot(data = EducationData, aes(x = BMI, y = after_stat(count),
              labs(title = "BMI distribution",
                   x = "BMI",
                   y = "Count")  + theme_minimal() +
-            theme(legend.position = "none",
-                  text = element_text(size = 8)) 
+            theme(text = element_text(size = 8)
+            ) 
 g6
 ```
 
