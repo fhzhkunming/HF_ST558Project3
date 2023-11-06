@@ -376,7 +376,6 @@ Logistic regression is designed to handle categorical dependent variables. In ou
 - Fit Logistic Regression Models
 ```{r}
 library(caret)
-library(Metrics)
 
 # Set seed for reproducibility
   set.seed(111)
@@ -388,8 +387,11 @@ library(Metrics)
                  family = "binomial",
                  method = "glm",
                  preProcess = c("center", "scale"),
-                 trControl = trainControl(method = "cv", number = 5),
-                 metric = "Accuracy",  
+                 trControl = trainControl(method = "cv", 
+                                          number = 5,
+                                          classProbs = TRUE,
+                                          summaryFunction = mnLogLoss),
+                 metric = "logLoss",  
                  trace = FALSE
                  )
 
@@ -399,8 +401,11 @@ library(Metrics)
                  family = "binomial",
                  method = "glm",
                  preProcess = c("center", "scale"),
-                 trControl = trainControl(method = "cv", number = 5),
-                 metric = "Accuracy",  
+                 trControl = trainControl(method = "cv", 
+                                          number = 5,
+                                          classProbs = TRUE,
+                                          summaryFunction = mnLogLoss),
+                 metric = "logLoss",  
                  trace = FALSE
                  )
 
@@ -410,8 +415,11 @@ library(Metrics)
                  family = "binomial",
                  method = "glm",
                  preProcess = c("center", "scale"),
-                 trControl = trainControl(method = "cv", number = 5),
-                 metric = "Accuracy",  
+                 trControl = trainControl(method = "cv", 
+                                          number = 5,
+                                          classProbs = TRUE,
+                                          summaryFunction = mnLogLoss),
+                 metric = "logLoss",  
                  trace = FALSE
                  )
 
@@ -421,22 +429,12 @@ library(Metrics)
   log_reg3
 
 # Test the model
-  predicted_test1 <- predict(log_reg1, newdata = test_set, type = "prob")
-  predicted_test2 <- predict(log_reg2, newdata = test_set, type = "prob")
-  predicted_test3 <- predict(log_reg3, newdata = test_set, type = "prob")
+  predicted_test1 <- predict(log_reg1, newdata = test_set)
+  predicted_test2 <- predict(log_reg2, newdata = test_set)
+  predicted_test3 <- predict(log_reg3, newdata = test_set)
 
-# convert Diabetes_binary factors to numeric and calculate log loss.
-  test_set$Diabetes_binary <- as.numeric(test_set$Diabetes_binary)
-  log_loss1 <- logLoss(test_set$Diabetes_binary, predicted_test1$Diabetes)
-  log_loss2 <- logLoss(test_set$Diabetes_binary, predicted_test2$Diabetes)
-  log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_test3$Diabetes)
-
-# Print the logLoss values
-  log_loss1
-  log_loss2
-  log_loss3
 ```  
-Based on the model fitting results, we select the one with higher Accuracy and lower log loss values.
+Based on the model fitting results, we select the one with lower log loss value.
 
 ### LASSO Logistic Regression Model  
 - What is a **LASSO logistic regression** and why we might try to use it over basic logistic regression?  
@@ -448,6 +446,7 @@ The primary goal of LASSO regression is to find a balance between model simplici
 - Fit a LASSO Logistic Regression Model
 ```{r, warning=FALSE}
 library(glmnet)
+library(Metrics)
 
 # Set seed for reproducibility
   set.seed(112)
@@ -462,8 +461,11 @@ library(glmnet)
 # Create a train control object for cross-validation
   ctrl <- trainControl(method = "cv", # Cross-validation method (k-fold)
                        number = 5, # Number of cross-validation folds
-                       verboseIter = FALSE
+                       verboseIter = FALSE,
+                       classProbs = TRUE,
+                       summaryFunction = mnLogLoss
                        )
+                      
 
  lambdas <- c(seq(0, 2, length = 3))
 
@@ -473,17 +475,14 @@ library(glmnet)
                      method = "glmnet",
                      trControl = ctrl,
                      tuneGrid = expand.grid(alpha = 1, lambda = 0), # Alpha = 1 for LASSO
-                     metric = "Accuracy" # Use logLoss metric for evaluation
+                     metric = "logLoss" # Use logLoss metric for evaluation
                      )
 
 # Predict probabilities on the test set
-  predicted_lasso <- predict(lasso_fit, newdata = test_set, type = "prob")
+  predicted_lasso <- predict(lasso_fit, newdata = test_set)
 
-# Calculate LogLoss manually
-  log_loss <- logLoss(test_set$Diabetes_binary, predicted_lasso$Diabetes)
-
-# Print the log loss value
-  log_loss
+# Print model results
+  lasso_fit
 ```
 
 ### Classification Tree Model  
@@ -496,15 +495,15 @@ Classification trees are a powerful and flexible machine learning algorithm that
 - Fit a Classification Tree Model  
 ```{r}
 library(rpart)
-library(MLmetrics)
 
 # Set a seed for reproducibility
   set.seed(123)
 
 # Set trainControl parameters
-  trctrl <- trainControl(method = "repeatedcv",
+  trctrl <- trainControl(method = "cv",
                          number = 5,
-                         repeats = 3,
+                         classProbs = TRUE,
+                         summaryFunction = mnLogLoss
                          )
 # Create a tuneGrid with tuning value of cp 0, 0.001 0.002,..., 0.1
   tuneGrid <- expand.grid(cp = seq(0, 0.025, by = 0.001))
@@ -518,21 +517,12 @@ library(MLmetrics)
                      preProcess = c("center", "scale"),
                      # Preprocess data by centering and scaling
                      tuneGrid = tuneGrid,
-                     metric = "Accuracy"
+                     metric = "logLoss"
                      )
-
-# Predict probabilities on the test set 
-  predicted_class <- predict(class_fit, newdata = test_set, type = "prob")
-
-# Calculate LogLoss manually
-  log_loss <- logLoss(test_set$Diabetes_binary, predicted_class$Diabetes)
 
 # Check the model result
   class_fit
 
-# Git the confusionMatrix and log loss value
-  confusionMatrix(class_fit, newdata = test)
-  log_loss
 # Plot the results of accuracy vs k-value
   plot(class_fit)
 ```
@@ -546,30 +536,22 @@ Random forests have several advantages over the basic decision trees: reduced ov
 
 - Fit a random forest model
 ```{r}
-
+# fit a random forest model
   rf_fit <- train(Diabetes_binary ~ ., 
                   data = train_set[, c("Diabetes_binary", predictors)], 
                   method = "rf",
-                  trControl = trainControl(method = "repeatedcv", 
+                  trControl = trainControl(method = "cv", 
                                            number = 5,
-                                           repeats = 3), 
+                                           classProbs = TRUE,
+                                           summaryFunction = mnLogLoss),
                   preProcess = c("center", "scale"), 
-                  metric = "Accuracy",
-                  tuneGrid = data.frame(mtry = 1:10))
+                  metric = "logLoss",
+                  tuneGrid = data.frame(mtry = 1:14))
 
 # Print and visualize the model results  
   rf_fit
   plot(rf_fit)
-# Predict probabilities on the test set 
-  predicted_rf <- predict(rf_fit, newdata = test_set, type = "prob")
-  
-# Add a small constant value to the predicted probabilities
-  predicted_rf$Diabetes <- pmax(predicted_rf$Diabetes, 1e-15)
-  predicted_rf$Diabetes <- pmin(predicted_rf$Diabetes, 1 - 1e-15)
 
-# Calculate LogLoss manually
-  log_loss <- logLoss(test_set$Diabetes_binary, predicted_rf$Diabetes)
-  log_loss
 ```
 
 ### Partial Least Squares Model  
@@ -578,8 +560,25 @@ Random forests have several advantages over the basic decision trees: reduced ov
 A **partial least squares (PLS) model** is a supervised learning algorithm used to model the relationship between two sets of variables. The PLS model is used when there are multicollinearity, i.e., the explanatory variables are correlated, and high dimensionality in the data. PLS allows us to reduce the dimensionality of correlated variables and model the underlying, shared, information of those variables (in both dependent and independent variables). Moreover, PLS can model multiple outcome variables, which many statistics and machine learning models cannot directly deal with. 
 
 - Fit a partial least squares model
-```{r}
+```{r, warning=FALSE}
+# load the required library
+library(pls)
 
+# fit partial least squares model
+  pls_fit <- train(Diabetes_binary ~ ., 
+                  data = train_set[, c("Diabetes_binary", predictors)], 
+                  method = "pls",
+                  trControl = trainControl(method = "cv", 
+                                           number = 5,
+                                           classProbs = TRUE,
+                                           summaryFunction = mnLogLoss), 
+                  preProcess = c("center", "scale"), 
+                  metric = "logLoss",
+                  tuneGrid = data.frame(ncomp = 1:14))
+
+# Print and visualize the model results  
+  pls_fit
+  plot(pls_fit)
 ```  
 ### Regularized Logistic Regression Model
 
@@ -594,6 +593,37 @@ Regularized logistic regression is particularly useful when dealing with high-di
 
 ```
 
+## Final Model Selection
+```{r}
+# convert Diabetes_binary factors to numeric.
+  test_set$Diabetes_binary <- as.numeric(test_set$Diabetes_binary)
+# Obtain predicted probabilities
+  predicted_prob1 <- predict(log_reg1, newdata = test_set, type = "prob")
+  predicted_prob2 <- predict(lasso_fit, newdata = test_set, type = "prob")
+  predicted_prob3 <- predict(class_fit, newdata = test_set, type = "prob")
+  predicted_prob4 <- predict(rf_fit, newdata = test_set, type = "prob")
+  predicted_prob5 <- predict(pls_fit, newdata = test_set, type = "prob")
+  
+# Calculate Log Loss manually for each model
+  log_loss1 <- logLoss(test_set$Diabetes_binary, predicted_prob1$Diabetes)
+  log_loss2 <- logLoss(test_set$Diabetes_binary, predicted_prob2$Diabetes)
+  log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_prob3$Diabetes)
+
+# Add a small constant value to the predicted probabilities to avoid infinite output
+  predicted_prob4$Diabetes <- pmax(predicted_prob4$Diabetes, 1e-15)
+  predicted_prob4$Diabetes <- pmin(predicted_prob4$Diabetes, 1 - 1e-15)
+  
+  log_loss4 <- logLoss(test_set$Diabetes_binary, predicted_prob4$Diabetes)
+  log_loss5 <- logLoss(test_set$Diabetes_binary, predicted_prob5$Diabetes)
+
+# print log loss values
+log_loss1
+log_loss2
+log_loss3
+log_loss4
+log_loss5
+```  
+Based on the results, the model with the lowest log loss value is the optimal model for selection.
 
 
 
