@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Diabetes is a seriously pervasive chronic disease that disrupts the body’s ability to regulate blood glucose levels, leading to a diminished quality of life and reduced life expectancy. It stands as one of the most prevalent chronic illnesses in the United States, impacting millions of Americans annually and imposing a significant economic burden on the nation.  
 
-In this project, we will use the `diabetes binary health indicators` dataset obtained from [Kaggle]( https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/) to conduct comprehensive exploratory data analysis (EDA) and develop predictive models. This dataset comprises 253,680 survey responses to the CDC’s BRFSS (Behavioral Risk Factor Surveillance System) from year 2015. The primary target variable, `Diabetes_binary`, offers binary classification, distinguishing between 0 for no diabetes, and 1 for prediabetes or diabetes. This dataset encompasses 21 feature variables and is not balanced. Detailed information of variable can be found [here](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/?select=diabetes_binary_health_indicators_BRFSS2015.csv).  
+In this project, we will use the `diabetes binary health indicators` dataset obtained from [Kaggle]( https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/) to conduct comprehensive exploratory data analysis (EDA) and develop predictive models. This dataset comprises 253,680 survey responses to the CDC’s BRFSS (`Behavioral Risk Factor Surveillance System`) from year 2015. The primary target variable, `Diabetes_binary`, offers binary classification, distinguishing between 0 for no diabetes, and 1 for prediabetes or diabetes. This dataset encompasses 21 feature variables and is not balanced. Detailed information of variable can be found [here](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/?select=diabetes_binary_health_indicators_BRFSS2015.csv).  
 
 Our analysis will primarily focus on a subset of key variables, including High blood pressure (HighBP), High cholesterol (HighChol), cholesterol check (CholCheck), Body Mass Index (BMI), Smoker, Fruits, Veggies, and Age.  
 In our EDA phase, we will start by summarizing basic statistics visualizing variable frequencies. This will be followed by the exploration of correlations between variables and the creation of contingency tables to better understand the interplay of these factors.  
@@ -70,10 +70,15 @@ params$Edu
 EducationData <- filter(diabetes, (Education == params$Edu))
 ```
 
-# EDA
+# Explanatory Data Analyzes
 ### Checking the missing values
 ```{r}
-missing_values <- colSums(is.na(EducationData))
+sum(is.na(EducationData))
+```
+
+### CHecking the structure of `EducationData`
+```{r}
+str(EducationData)
 ```
 
 ### Summary statistics for numeric variables
@@ -166,7 +171,8 @@ EducationData$PhysActivity <- factor(EducationData$PhysActivity, levels = c(0, 1
 EducationData$HvyAlcoholConsump <- as.factor(EducationData$HvyAlcoholConsump)
 EducationData$AnyHealthcare <- as.factor(EducationData$AnyHealthcare)
 EducationData$NoDocbcCost <- as.factor(EducationData$NoDocbcCost)
-EducationData$DiffWalk <- as.factor(EducationData$DiffWalk)
+EducationData$DiffWalk <- factor(EducationData$DiffWalk, levels = c(0, 1),
+                                       labels = c("No", "Yes"))
 ```
 
 ### Summary statistics for Character variables
@@ -280,41 +286,44 @@ g6
 ### Box plots
 ```{r}
 library(gridExtra)
-g7 <- ggplot(EducationData, aes(x = Diabetes_binary, y = BMI, fill = Diabetes_binary)) +
+g7 <- ggplot(EducationData, aes(x = Diabetes_binary, y = BMI, 
+                                fill = Diabetes_binary)) +
      geom_boxplot() +
      labs(title = "BMI Distribution vs. Diabetes",
        x = "Diabetes_binary",
        y = "BMI") +
      theme(text = element_text(size = 8)) 
-g8 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Age, fill = Diabetes_binary)) +
+g8 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Age, 
+                                fill = Diabetes_binary)) +
       geom_boxplot() +
-  labs(title = "Age Distribution vs. Diabetes",
-       x = "Diabetes_binary",
-       y = "Age") +
-  theme(text = element_text(size = 8)) 
-g9 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Income, fill = Diabetes_binary)) +
+      labs(title = "Age Distribution vs. Diabetes",
+           x = "Diabetes_binary",
+           y = "Age") +
+      theme(text = element_text(size = 8)) 
+g9 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Income, 
+                                fill = Diabetes_binary)) +
       geom_boxplot() +
-  labs(title = "Income Distribution vs. Diabetes",
-       x = "Diabetes_binary",
-       y = "Income") +
-  theme(text = element_text(size = 8))
-g10 <- ggplot(EducationData, aes(x = Diabetes_binary, y = MentHlth, fill = Diabetes_binary)) +
-      geom_boxplot() +
-  labs(title = "Mental Health Distribution vs. Diabetes",
-       x = "Diabetes_binary",
-       y = "Mental Health") +
-  theme(text = element_text(size = 8)) 
+      labs(title = "Income Distribution vs. Diabetes",
+           x = "Diabetes_binary",
+           y = "Income") +
+      theme(text = element_text(size = 8))
+g10 <- ggplot(EducationData, aes(x = Diabetes_binary, y = MentHlth, 
+                                 fill = Diabetes_binary)) +
+       geom_boxplot() +
+        labs(title = "Mental Health Distribution vs. Diabetes",
+        x = "Diabetes_binary",
+        y = "Mental Health") +
+        theme(text = element_text(size = 8)) 
 # Arrange the plots into a 2x2 gird using cowplot
-complots <- plot_grid(g7, g8, g9, g10,
-                            ncol = 2,
-                            labels = c("a", "b", "c", "d"))
+complots <- plot_grid(g7, g8, g9, g10, ncol = 2,
+                      labels = c("a", "b", "c", "d"))
 # Print the combined plots
 complots
 ```
 ### Density plots
 ```{r}
 g11 <- ggplot(EducationData, aes(x = Income)) +
-           geom_density(adjust = 0.5, alpha = 0.5, 
+          geom_density(adjust = 0.5, alpha = 0.5, 
                         aes(fill = Diabetes_binary), position = "stack") +
           labs(title = "Distribution of Income vs. Diabetes",
                x = "Diabetes_binary",
@@ -323,12 +332,12 @@ g11 <- ggplot(EducationData, aes(x = Income)) +
                 text = element_text(size = 8))
   
 g12 <- ggplot(EducationData, aes(x = Age)) +
-           geom_density(adjust = 0.5, alpha = 0.5, 
+          geom_density(adjust = 0.5, alpha = 0.5, 
                         aes(fill = Diabetes_binary), position = "stack") +
           labs(title = "Distribution of Age vs. Diabetes",
                x = "Age",
                y = "Density") +
-  theme(text = element_text(size = 8))
+          theme(text = element_text(size = 8))
 # Arrange the plots into a 2x2 gird using cowplot
 complots <- plot_grid(g11, g12, ncol = 2,
                       labels = c("a", "b"))
@@ -495,31 +504,7 @@ Classification trees are a powerful and flexible machine learning algorithm that
 
 - Fit a Classification Tree Model  
 ```{r}
-# library(rpart)
-# 
-# # Set a seed for reproducibility
-# set.seed(123)
-# 
-# # Set trainControl parameters 
-# trctrl <- trainControl(method = "repeatedcv",
-#                        number = 5,
-#                        repeats = 3
-#                        )
-# # Create a tuneGrid with tuning value of cp 0, 0.001 0.002,..., 0.1
-# tuneGrid <- expand.grid(cp = seq(0, 0.1, by = 0.001))
-# 
-# # Fit the kNN model
-# class_fit <- train(HeartDisease ~.,
-#                    data = training,
-#                    method = "rpart",
-#                    trControl=trctrl,
-#                    preProcess = c("center", "scale"),
-#                    # Preprocess data by centering and scaling
-#                    tuneGrid = tuneGrid
-#                    )
-# 
-# # Check the result of the train() method
-# class_fit
+
 ```
 
 ### Random Forest 
@@ -540,8 +525,23 @@ Random forests have several advantages over the basic decision trees: reduced ov
 A **partial least squares (PLS) model** is a supervised learning algorithm used to model the relationship between two sets of variables. The PLS model is used when there are multicollinearity, i.e., the explanatory variables are correlated, and high dimensionality in the data. PLS allows us to reduce the dimensionality of correlated variables and model the underlying, shared, information of those variables (in both dependent and independent variables). Moreover, PLS can model multiple outcome variables, which many statistics and machine learning models cannot directly deal with. 
 
 - Fit a partial least squares model
-```{r}
+```{r, warning=FALSE}
+library(pls)
+# fit partial least squares model
+  pls_fit <- train(Diabetes_binary ~ ., 
+                  data = train_set[, c("Diabetes_binary", predictors)], 
+                  method = "pls",
+                  trControl = trainControl(method = "cv", 
+                                           number = 5,
+                                           classProbs = TRUE,
+                                           summaryFunction = mnLogLoss), 
+                  preProcess = c("center", "scale"), 
+                  metric = "logLoss",
+                  tuneGrid = data.frame(ncomp = 1:14))
 
+# Print and visualize the model results  
+  pls_fit
+  plot(pls_fit)
 ```  
 ### Regularized Logistic Regression Model
 
@@ -553,7 +553,55 @@ Regularized logistic regression is particularly useful when dealing with high-di
 
 - Fit a regularized logistic regression model
 ```{r}
+library(caret)
+library(glmnet)
+library(LiblineaR)
+library(Metrics)
+# Select variables for fitting the model
+predictors <- c("HighBP", "HighChol", "CholCheck", 
+                "BMI", "Smoker", "Stroke", "PhysActivity",
+                "HvyAlcoholConsump", "GenHlth", "MentHlth", 
+                "PhysHlth", "Sex", "Age", "Income"
+)
 
+
+# Create a grid of values for cost, loss, and epsilon
+tuning_grid <- expand.grid(
+  cost = c(0.01, 0.1, 1, 10),
+  loss = "L1",
+  epsilon = c(0.001, 0.01, 0.1)
+)
+
+# Fit a Lasso model
+reglog_fit <- train(Diabetes_binary ~ .,
+                    data = train_set[, c("Diabetes_binary", predictors)],
+                    method = "regLogistic",
+                    trControl = trainControl(method = "cv", 
+                                             number = 5,
+                                             classProbs = TRUE,
+                                             summaryFunction = mnLogLoss), 
+                    preProcess = c("center", "scale"), 
+                    metric = "logLoss",
+                    tuneGrid = tuning_grid
+                    )  # <- Added closing parenthesis here
+
+# Print and visualize the model results  
+reglog_fit  
+plot(reglog_fit)
+```
+
+## Final Model Selection
+```{r}
+# convert Diabetes_binary factors to numeric.
+  test_set$Diabetes_binary <- as.numeric(test_set$Diabetes_binary)
+# Obtain predicted probabilities
+  predicted_prob6 <- predict(reglog_fit, newdata = test_set, type = "prob")
+  
+
+  log_loss6 <- logLoss(test_set$Diabetes_binary, predicted_prob6$Diabetes)
+# print log loss values
+log_loss6
+```  
 ```
 
 
