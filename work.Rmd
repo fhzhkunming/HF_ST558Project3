@@ -547,6 +547,29 @@ Random forests have several advantages over the basic decision trees: reduced ov
 - Fit a random forest model
 ```{r}
 
+  rf_fit <- train(Diabetes_binary ~ ., 
+                  data = train_set[, c("Diabetes_binary", predictors)], 
+                  method = "rf",
+                  trControl = trainControl(method = "repeatedcv", 
+                                           number = 5,
+                                           repeats = 3), 
+                  preProcess = c("center", "scale"), 
+                  metric = "Accuracy",
+                  tuneGrid = data.frame(mtry = 1:10))
+
+# Print and visualize the model results  
+  rf_fit
+  plot(rf_fit)
+# Predict probabilities on the test set 
+  predicted_rf <- predict(rf_fit, newdata = test_set, type = "prob")
+  
+# Add a small constant value to the predicted probabilities
+  predicted_rf$Diabetes <- pmax(predicted_rf$Diabetes, 1e-15)
+  predicted_rf$Diabetes <- pmin(predicted_rf$Diabetes, 1 - 1e-15)
+
+# Calculate LogLoss manually
+  log_loss <- logLoss(test_set$Diabetes_binary, predicted_rf$Diabetes)
+  log_loss
 ```
 
 ### Partial Least Squares Model  
