@@ -138,8 +138,7 @@ correlation_data <- data.frame(Variable = names(correlations), Correlation = cor
 ggplot(correlation_data, aes(x = Variable, y = Correlation)) +
   geom_bar(stat = "identity", fill = "orange") +
   labs(title = "Correlation with Diabetes_binary", x = "Variable", y = "Correlation") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
-  # coord_flip()  # Rotate the x-axis labels for better readability
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
 ```
 
 In this chart, some of the variables exhibited positive correlations with 'Diabetes_binary,' while others showed negative correlations with it.
