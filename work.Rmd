@@ -338,11 +338,7 @@ complots <- plot_grid(g11, g12, ncol = 2,
                       labels = c("a", "b"))
 # Print the combined plots
 complots
-=======
-### Graphical Summaries
-
-#### Checking The relation B/W HighBP and Diabetes
-
+```
 
 # Modeling   
 ## Split the data  

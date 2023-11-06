@@ -106,8 +106,8 @@ head(diabetes)
     ## #   NoDocbcCost <dbl>, GenHlth <dbl>, MentHlth <dbl>, PhysHlth <dbl>,
     ## #   DiffWalk <dbl>, Sex <dbl>, Age <dbl>, Education <dbl>, Income <dbl>
 
-
 ## Grouping education levels
+
 ``` r
 diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2), "SomeElementary",
                          ifelse(diabetes$Education == 3, "SomeHighSchool", 
@@ -215,7 +215,6 @@ kable(rounded_Cor_Matrix)
 ## Visualization of correlation with `Diabetes_binary` through bar graph
 
 ``` r
-# Load required libraries
 library(ggplot2)
 # Exclude the character variable from the data
 data <- EducationData[, !(names(EducationData) %in% "Education")]
@@ -273,9 +272,6 @@ EducationData$AnyHealthcare <- as.factor(EducationData$AnyHealthcare)
 EducationData$NoDocbcCost <- as.factor(EducationData$NoDocbcCost)
 EducationData$DiffWalk <- factor(EducationData$DiffWalk, levels = c(0, 1),
                                        labels = c("No", "Yes"))
-# EducationData$GenHlth <- factor(EducationData$GenHlth, 
-#                                 levels = c(1, 2, 3, 4, 5),
-#                                 labels = c("Excellent", "Very good", "Good", "Fair", "Poor"))
 ```
 
 ## Summary statistics for Character variables
@@ -452,7 +448,6 @@ library(gridExtra)
     ##     combine
 
 ``` r
-
 g7 <- ggplot(EducationData, aes(x = Diabetes_binary, y = BMI, fill = Diabetes_binary)) +
      geom_boxplot() +
      labs(title = "BMI Distribution vs. Diabetes",
@@ -511,6 +506,7 @@ complots <- plot_grid(g11, g12, ncol = 2,
 # Print the combined plots
 complots
 ```
+
 ![](work_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 # Modeling
@@ -595,8 +591,6 @@ library(caret)
 library(Metrics)
 ```
 
-    ## Warning: package 'Metrics' was built under R version 4.3.2
-
     ## 
     ## Attaching package: 'Metrics'
 
@@ -649,13 +643,13 @@ log_reg1
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (14), scaled (14) 
+    ## Pre-processing: centered (8), scaled (8) 
     ## Resampling: Cross-Validated (5 fold) 
     ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
     ## 
     ##   Accuracy   Kappa    
-    ##   0.7103697  0.1679904
+    ##   0.7093544  0.1519026
 
 ``` r
 log_reg2
@@ -667,13 +661,13 @@ log_reg2
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (18), scaled (18) 
+    ## Pre-processing: centered (12), scaled (12) 
     ## Resampling: Cross-Validated (5 fold) 
     ## Summary of sample sizes: 2362, 2361, 2362, 2361, 2362 
     ## Resampling results:
     ## 
     ##   Accuracy   Kappa    
-    ##   0.7100209  0.1655229
+    ##   0.7090051  0.1468737
 
 ``` r
 log_reg3
@@ -693,6 +687,7 @@ log_reg3
     ##   Accuracy   Kappa
     ##   0.7083335  0
 
+``` r
 # Test the model
 predicted_test1 <- predict(log_reg1, newdata = test_set, type = "prob")
 predicted_test2 <- predict(log_reg2, newdata = test_set, type = "prob")
@@ -708,13 +703,13 @@ log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_test3$Diabetes)
 log_loss1
 ```
 
-    ## [1] 1.637101
+    ## [1] 1.632265
 
 ``` r
 log_loss2
 ```
 
-    ## [1] 1.702127
+    ## [1] 1.697171
 
 ``` r
 log_loss3
@@ -790,7 +785,7 @@ log_loss <- logLoss(test_set$Diabetes_binary, predicted_lasso$Diabetes)
 log_loss
 ```
 
-    ## [1] 1.690743
+    ## [1] 1.686142
 
 ### Classification Tree Model
 
@@ -881,4 +876,3 @@ analysis when dealing with classification problems, especially when
 overfitting is a concern.
 
 - Fit a regularized logistic regression model
-
