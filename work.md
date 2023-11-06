@@ -42,10 +42,8 @@ as a `regularized logistic regression model`. The performance of these
 models will be rigorously evaluated using the test dataset, and we will
 determine the most effective model for predicting diabetes outcomes.
 
-\<\<\<\<\<\<\< Updated upstream Description of variables in the data
-set:  
-======= Description of variables in the data set:  
-\>\>\>\>\>\>\> Stashed changes + Diabetes_binary: 0 = no diabetes 1 =
+Description of variables in the data set:  
+Diabetes_binary: 0 = no diabetes 1 =
 prediabetes or diabetes  
 + HighBP: High blood pressure  
 + HighChol: High cholesterol  
@@ -217,7 +215,6 @@ kable(rounded_Cor_Matrix)
 ### Visualization of correlation with `Diabetes_binary` through bar graph
 
 ``` r
-# Load required libraries
 library(ggplot2)
 # Exclude the character variable from the data
 data <- EducationData[, !(names(EducationData) %in% "Education")]
@@ -273,7 +270,8 @@ EducationData$PhysActivity <- factor(EducationData$PhysActivity, levels = c(0, 1
 EducationData$HvyAlcoholConsump <- as.factor(EducationData$HvyAlcoholConsump)
 EducationData$AnyHealthcare <- as.factor(EducationData$AnyHealthcare)
 EducationData$NoDocbcCost <- as.factor(EducationData$NoDocbcCost)
-EducationData$DiffWalk <- as.factor(EducationData$DiffWalk)
+EducationData$DiffWalk <- factor(EducationData$DiffWalk, levels = c(0, 1),
+                                       labels = c("No", "Yes"))
 ```
 
 ### Summary statistics for Character variables
@@ -350,9 +348,165 @@ kable(table(EducationData$Diabetes_binary, EducationData$HighBP, EducationData$S
 | NonDiabetes | HighBP    | Male   |  687 |
 | Diabetes    | HighBP    | Male   |  398 |
 
-### Graphical Summaries
 
-#### Checking The relation B/W HighBP and Diabetes
+## Graphical Summaries
+### Bar plots
+
+``` r
+library(ggplot2)
+library(cowplot)
+# Checking The relation B/W HighBP and Diabetes
+g1 <- ggplot(data = EducationData, aes(x = HighBP, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar(position = "dodge") +
+             labs(title = "Diabetes Frequency for High Blood Pressure",
+                  x = "High Blood Pressure",
+                  y = "Frequency") + theme_minimal() +
+            theme(text = element_text(size = 8)) 
+# Checking The relation B/W HighChol and Diabetes
+g2 <- ggplot(data = EducationData, aes(x = HighChol, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar(position = "dodge") +
+               labs(title = "Diabetes Frequency for High Cholesterol",
+                    x = "High Cholesterol",
+                    y = "Frequency") + theme_minimal() +
+
+            theme(legend.position = "none",
+                  text = element_text(size = 8)) # Hide the legend
+g3 <- ggplot(data = EducationData, aes(x = DiffWalk, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar(position = "dodge") +
+             labs(title = "Diabetes Frequency for Difficult Walking",
+                  x = "Difficult Walking",
+                  y = "Frequency") + theme_minimal() +
+            theme(legend.position = "none",
+                  text = element_text(size = 8)) # Hide the legend
+g4 <- ggplot(data = EducationData, aes(x = Smoker, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar(position = "dodge") +
+             labs(title = "Diabetes Frequency for Smoker",
+                  x = "Smoker",
+                  y = "Frequency")  + theme_minimal() +
+            theme(legend.position = "none",
+                  text = element_text(size = 8)) # Hide the legend           
+# Arrange the plots into a 2x2 gird using cowplot
+combined_plots <- plot_grid(g1, g2, g3, g4,
+                            ncol = 2,
+                            labels = c("a", "b", "c", "d"))
+# Print the combined plots
+combined_plots
+```
+
+![](work_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+``` r
+library(ggplot2)
+# Define labels for 'GenHlth'
+genhlth_labels <- c("Excellent", "Very Good", "Good", "Fair", "Poor")
+
+# Create a plot with two facets (subplots)
+g5 <- ggplot(EducationData, aes(x = factor(GenHlth, levels = 1:5, labels = genhlth_labels), 
+                               fill = Diabetes_binary)) +
+  geom_bar(position = 'dodge', alpha = 0.5, width = 0.5) +
+  facet_wrap(~ Diabetes_binary, ncol = 2) +
+  labs(title = 'General Health Conditions Distribution', x = NULL, y = 'Count') +
+  theme_minimal() +
+  theme(legend.title = element_blank()) +
+  theme(legend.position = "none", axis.text.x = element_text(size = 8))
+g5
+```
+
+![](work_files/figure-gfm/unnamed-chunk-17-1.png)<!-- --> BMI
+distribution
+
+``` r
+g6 <- ggplot(data = EducationData, aes(x = BMI, y = after_stat(count), 
+                                       fill = Diabetes_binary)) +
+             geom_bar() +
+             labs(title = "BMI distribution",
+                  x = "BMI",
+                  y = "Count")  + theme_minimal() +
+            theme(legend.position = "none",
+                  text = element_text(size = 8)) 
+g6
+```
+
+![](work_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+### Box plots
+
+``` r
+library(gridExtra)
+```
+
+    ## 
+    ## Attaching package: 'gridExtra'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     combine
+
+``` r
+g7 <- ggplot(EducationData, aes(x = Diabetes_binary, y = BMI, fill = Diabetes_binary)) +
+     geom_boxplot() +
+     labs(title = "BMI Distribution vs. Diabetes",
+       x = "Diabetes_binary",
+       y = "BMI") +
+     theme(text = element_text(size = 8)) 
+g8 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Age, fill = Diabetes_binary)) +
+      geom_boxplot() +
+  labs(title = "Age Distribution vs. Diabetes",
+       x = "Diabetes_binary",
+       y = "Age") +
+  theme(text = element_text(size = 8)) 
+g9 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Income, fill = Diabetes_binary)) +
+      geom_boxplot() +
+  labs(title = "Income Distribution vs. Diabetes",
+       x = "Diabetes_binary",
+       y = "Income") +
+  theme(text = element_text(size = 8))
+g10 <- ggplot(EducationData, aes(x = Diabetes_binary, y = MentHlth, fill = Diabetes_binary)) +
+      geom_boxplot() +
+  labs(title = "Mental Health Distribution vs. Diabetes",
+       x = "Diabetes_binary",
+       y = "Mental Health") +
+  theme(text = element_text(size = 8)) 
+# Arrange the plots into a 2x2 gird using cowplot
+complots <- plot_grid(g7, g8, g9, g10,
+                            ncol = 2,
+                            labels = c("a", "b", "c", "d"))
+# Print the combined plots
+complots
+```
+
+![](work_files/figure-gfm/unnamed-chunk-19-1.png)<!-- --> \### Density
+plots
+
+``` r
+g11 <- ggplot(EducationData, aes(x = Income)) +
+           geom_density(adjust = 0.5, alpha = 0.5, 
+                        aes(fill = Diabetes_binary), position = "stack") +
+          labs(title = "Distribution of Income vs. Diabetes",
+               x = "Diabetes_binary",
+               y = "Density") +
+          theme(legend.position = "none", 
+                text = element_text(size = 8))
+  
+g12 <- ggplot(EducationData, aes(x = Age)) +
+           geom_density(adjust = 0.5, alpha = 0.5, 
+                        aes(fill = Diabetes_binary), position = "stack") +
+          labs(title = "Distribution of Age vs. Diabetes",
+               x = "Age",
+               y = "Density") +
+  theme(text = element_text(size = 8))
+# Arrange the plots into a 2x2 gird using cowplot
+complots <- plot_grid(g11, g12, ncol = 2,
+                      labels = c("a", "b"))
+# Print the combined plots
+complots
+```
+
+![](work_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 # Modeling
 
@@ -436,8 +590,6 @@ library(caret)
 library(Metrics)
 ```
 
-    ## Warning: package 'Metrics' was built under R version 4.3.2
-
     ## 
     ## Attaching package: 'Metrics'
 
@@ -493,7 +645,7 @@ log_reg1
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (14), scaled (14) 
+    ## Pre-processing: centered (8), scaled (8) 
     ## Resampling: Cross-Validated (5 fold) 
     ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
@@ -511,7 +663,7 @@ log_reg2
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (18), scaled (18) 
+    ## Pre-processing: centered (12), scaled (12) 
     ## Resampling: Cross-Validated (5 fold) 
     ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
@@ -552,13 +704,12 @@ log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_test3$Diabetes)
 # Print the logLoss values
 log_loss1
 ```
-
     ## [1] 1.568187
+
 
 ``` r
 log_loss2
 ```
-
     ## [1] 1.572164
 
 ``` r
@@ -637,8 +788,8 @@ log_loss <- logLoss(test_set$Diabetes_binary, predicted_lasso$Diabetes)
 # Print the log loss value
 log_loss
 ```
-
     ## [1] 1.559814
+
 
 ### Classification Tree Model
 
