@@ -17,7 +17,7 @@ dataset obtained from
 [Kaggle](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset/)
 to conduct comprehensive exploratory data analysis (EDA) and develop
 predictive models. This dataset comprises 253,680 survey responses to
-the CDC’s BRFSS (Behavioral Risk Factor Surveillance System) from year
+the CDC’s BRFSS (`Behavioral Risk Factor Surveillance System`) from year
 2015. The primary target variable, `Diabetes_binary`, offers binary
 classification, distinguishing between 0 for no diabetes, and 1 for
 prediabetes or diabetes. This dataset encompasses 21 feature variables
@@ -43,8 +43,7 @@ models will be rigorously evaluated using the test dataset, and we will
 determine the most effective model for predicting diabetes outcomes.
 
 Description of variables in the data set:  
-Diabetes_binary: 0 = no diabetes 1 =
-prediabetes or diabetes  
++ Diabetes_binary: 0 = no diabetes 1 = prediabetes or diabetes  
 + HighBP: High blood pressure  
 + HighChol: High cholesterol  
 + CholCheck: 0 = no cholesterol check in 5 years 1 = yes cholesterol
@@ -127,13 +126,45 @@ params$Edu
 EducationData <- filter(diabetes, (Education == params$Edu))
 ```
 
-# EDA
+# Explanatory Data Analyzes
 
 ### Checking the missing values
 
 ``` r
-missing_values <- colSums(is.na(EducationData))
+sum(is.na(EducationData))
 ```
+
+    ## [1] 0
+
+### CHecking the structure of `EducationData`
+
+``` r
+str(EducationData)
+```
+
+    ## tibble [4,217 × 22] (S3: tbl_df/tbl/data.frame)
+    ##  $ Diabetes_binary     : num [1:4217] 0 1 1 1 0 0 1 0 1 0 ...
+    ##  $ HighBP              : num [1:4217] 1 1 0 1 1 1 1 1 1 0 ...
+    ##  $ HighChol            : num [1:4217] 1 1 1 1 0 1 1 1 0 1 ...
+    ##  $ CholCheck           : num [1:4217] 1 1 1 1 1 1 1 1 1 1 ...
+    ##  $ BMI                 : num [1:4217] 38 28 32 25 35 45 25 37 30 36 ...
+    ##  $ Smoker              : num [1:4217] 1 1 0 1 1 1 1 1 0 0 ...
+    ##  $ Stroke              : num [1:4217] 0 0 0 0 0 0 0 0 0 0 ...
+    ##  $ HeartDiseaseorAttack: num [1:4217] 0 1 1 1 0 1 0 0 0 0 ...
+    ##  $ PhysActivity        : num [1:4217] 0 0 1 0 1 1 0 1 1 0 ...
+    ##  $ Fruits              : num [1:4217] 1 0 0 1 1 1 0 1 0 0 ...
+    ##  $ Veggies             : num [1:4217] 1 1 0 1 1 1 0 1 0 1 ...
+    ##  $ HvyAlcoholConsump   : num [1:4217] 0 0 0 0 0 0 0 0 0 0 ...
+    ##  $ AnyHealthcare       : num [1:4217] 1 1 1 1 1 1 1 1 1 0 ...
+    ##  $ NoDocbcCost         : num [1:4217] 0 0 0 0 0 1 0 0 0 1 ...
+    ##  $ GenHlth             : num [1:4217] 5 4 1 5 4 5 4 3 3 4 ...
+    ##  $ MentHlth            : num [1:4217] 15 0 0 15 0 5 3 0 0 0 ...
+    ##  $ PhysHlth            : num [1:4217] 30 0 0 30 1 10 6 0 7 30 ...
+    ##  $ DiffWalk            : num [1:4217] 1 0 1 1 1 1 1 0 1 0 ...
+    ##  $ Sex                 : num [1:4217] 0 1 0 0 1 0 1 0 0 1 ...
+    ##  $ Age                 : num [1:4217] 13 12 13 9 9 7 12 11 10 5 ...
+    ##  $ Education           : chr [1:4217] "SomeElementary" "SomeElementary" "SomeElementary" "SomeElementary" ...
+    ##  $ Income              : num [1:4217] 3 4 2 3 5 2 2 2 3 3 ...
 
 ### Summary statistics for numeric variables
 
@@ -215,6 +246,7 @@ kable(rounded_Cor_Matrix)
 ### Visualization of correlation with `Diabetes_binary` through bar graph
 
 ``` r
+# Load required libraries
 library(ggplot2)
 # Exclude the character variable from the data
 data <- EducationData[, !(names(EducationData) %in% "Education")]
@@ -232,7 +264,7 @@ ggplot(correlation_data, aes(x = Variable, y = Correlation)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
-![](work_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](work_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
   # coord_flip()  # Rotate the x-axis labels for better readability
@@ -348,8 +380,8 @@ kable(table(EducationData$Diabetes_binary, EducationData$HighBP, EducationData$S
 | NonDiabetes | HighBP    | Male   |  687 |
 | Diabetes    | HighBP    | Male   |  398 |
 
-
 ## Graphical Summaries
+
 ### Bar plots
 
 ``` r
@@ -397,7 +429,7 @@ combined_plots <- plot_grid(g1, g2, g3, g4,
 combined_plots
 ```
 
-![](work_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](work_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 library(ggplot2)
@@ -416,7 +448,7 @@ g5 <- ggplot(EducationData, aes(x = factor(GenHlth, levels = 1:5, labels = genhl
 g5
 ```
 
-![](work_files/figure-gfm/unnamed-chunk-17-1.png)<!-- --> BMI
+![](work_files/figure-gfm/unnamed-chunk-18-1.png)<!-- --> BMI
 distribution
 
 ``` r
@@ -431,7 +463,7 @@ g6 <- ggplot(data = EducationData, aes(x = BMI, y = after_stat(count),
 g6
 ```
 
-![](work_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](work_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ### Box plots
 
@@ -447,44 +479,47 @@ library(gridExtra)
     ##     combine
 
 ``` r
-g7 <- ggplot(EducationData, aes(x = Diabetes_binary, y = BMI, fill = Diabetes_binary)) +
+g7 <- ggplot(EducationData, aes(x = Diabetes_binary, y = BMI, 
+                                fill = Diabetes_binary)) +
      geom_boxplot() +
      labs(title = "BMI Distribution vs. Diabetes",
        x = "Diabetes_binary",
        y = "BMI") +
      theme(text = element_text(size = 8)) 
-g8 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Age, fill = Diabetes_binary)) +
+g8 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Age, 
+                                fill = Diabetes_binary)) +
       geom_boxplot() +
-  labs(title = "Age Distribution vs. Diabetes",
-       x = "Diabetes_binary",
-       y = "Age") +
-  theme(text = element_text(size = 8)) 
-g9 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Income, fill = Diabetes_binary)) +
+      labs(title = "Age Distribution vs. Diabetes",
+           x = "Diabetes_binary",
+           y = "Age") +
+      theme(text = element_text(size = 8)) 
+g9 <- ggplot(EducationData, aes(x = Diabetes_binary, y = Income, 
+                                fill = Diabetes_binary)) +
       geom_boxplot() +
-  labs(title = "Income Distribution vs. Diabetes",
-       x = "Diabetes_binary",
-       y = "Income") +
-  theme(text = element_text(size = 8))
-g10 <- ggplot(EducationData, aes(x = Diabetes_binary, y = MentHlth, fill = Diabetes_binary)) +
-      geom_boxplot() +
-  labs(title = "Mental Health Distribution vs. Diabetes",
-       x = "Diabetes_binary",
-       y = "Mental Health") +
-  theme(text = element_text(size = 8)) 
+      labs(title = "Income Distribution vs. Diabetes",
+           x = "Diabetes_binary",
+           y = "Income") +
+      theme(text = element_text(size = 8))
+g10 <- ggplot(EducationData, aes(x = Diabetes_binary, y = MentHlth, 
+                                 fill = Diabetes_binary)) +
+       geom_boxplot() +
+        labs(title = "Mental Health Distribution vs. Diabetes",
+        x = "Diabetes_binary",
+        y = "Mental Health") +
+        theme(text = element_text(size = 8)) 
 # Arrange the plots into a 2x2 gird using cowplot
-complots <- plot_grid(g7, g8, g9, g10,
-                            ncol = 2,
-                            labels = c("a", "b", "c", "d"))
+complots <- plot_grid(g7, g8, g9, g10, ncol = 2,
+                      labels = c("a", "b", "c", "d"))
 # Print the combined plots
 complots
 ```
 
-![](work_files/figure-gfm/unnamed-chunk-19-1.png)<!-- --> \### Density
+![](work_files/figure-gfm/unnamed-chunk-20-1.png)<!-- --> \### Density
 plots
 
 ``` r
 g11 <- ggplot(EducationData, aes(x = Income)) +
-           geom_density(adjust = 0.5, alpha = 0.5, 
+          geom_density(adjust = 0.5, alpha = 0.5, 
                         aes(fill = Diabetes_binary), position = "stack") +
           labs(title = "Distribution of Income vs. Diabetes",
                x = "Diabetes_binary",
@@ -493,12 +528,12 @@ g11 <- ggplot(EducationData, aes(x = Income)) +
                 text = element_text(size = 8))
   
 g12 <- ggplot(EducationData, aes(x = Age)) +
-           geom_density(adjust = 0.5, alpha = 0.5, 
+          geom_density(adjust = 0.5, alpha = 0.5, 
                         aes(fill = Diabetes_binary), position = "stack") +
           labs(title = "Distribution of Age vs. Diabetes",
                x = "Age",
                y = "Density") +
-  theme(text = element_text(size = 8))
+          theme(text = element_text(size = 8))
 # Arrange the plots into a 2x2 gird using cowplot
 complots <- plot_grid(g11, g12, ncol = 2,
                       labels = c("a", "b"))
@@ -506,7 +541,7 @@ complots <- plot_grid(g11, g12, ncol = 2,
 complots
 ```
 
-![](work_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](work_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 # Modeling
 
@@ -645,7 +680,7 @@ log_reg1
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (8), scaled (8) 
+    ## Pre-processing: centered (14), scaled (14) 
     ## Resampling: Cross-Validated (5 fold) 
     ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
@@ -663,7 +698,7 @@ log_reg2
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (12), scaled (12) 
+    ## Pre-processing: centered (18), scaled (18) 
     ## Resampling: Cross-Validated (5 fold) 
     ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
@@ -704,12 +739,13 @@ log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_test3$Diabetes)
 # Print the logLoss values
 log_loss1
 ```
-    ## [1] 1.568187
 
+    ## [1] 1.568187
 
 ``` r
 log_loss2
 ```
+
     ## [1] 1.572164
 
 ``` r
@@ -788,8 +824,8 @@ log_loss <- logLoss(test_set$Diabetes_binary, predicted_lasso$Diabetes)
 # Print the log loss value
 log_loss
 ```
-    ## [1] 1.559814
 
+    ## [1] 1.559814
 
 ### Classification Tree Model
 
@@ -821,34 +857,6 @@ complex. To address, ensemble techniques like random forests and
 gradient boosting are often used to to enhance their performance.
 
 - Fit a Classification Tree Model
-
-``` r
-# library(rpart)
-# 
-# # Set a seed for reproducibility
-# set.seed(123)
-# 
-# # Set trainControl parameters 
-# trctrl <- trainControl(method = "repeatedcv",
-#                        number = 5,
-#                        repeats = 3
-#                        )
-# # Create a tuneGrid with tuning value of cp 0, 0.001 0.002,..., 0.1
-# tuneGrid <- expand.grid(cp = seq(0, 0.1, by = 0.001))
-# 
-# # Fit the kNN model
-# class_fit <- train(HeartDisease ~.,
-#                    data = training,
-#                    method = "rpart",
-#                    trControl=trctrl,
-#                    preProcess = c("center", "scale"),
-#                    # Preprocess data by centering and scaling
-#                    tuneGrid = tuneGrid
-#                    )
-# 
-# # Check the result of the train() method
-# class_fit
-```
 
 ### Random Forest
 
@@ -890,7 +898,74 @@ models cannot directly deal with.
 
 - Fit a partial least squares model
 
-### Regularized Logistic Regression Model
+``` r
+library(pls)
+```
+
+    ## 
+    ## Attaching package: 'pls'
+
+    ## The following object is masked from 'package:caret':
+    ## 
+    ##     R2
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     loadings
+
+``` r
+# fit partial least squares model
+  pls_fit <- train(Diabetes_binary ~ ., 
+                  data = train_set[, c("Diabetes_binary", predictors)], 
+                  method = "pls",
+                  trControl = trainControl(method = "cv", 
+                                           number = 5,
+                                           classProbs = TRUE,
+                                           summaryFunction = mnLogLoss), 
+                  preProcess = c("center", "scale"), 
+                  metric = "logLoss",
+                  tuneGrid = data.frame(ncomp = 1:14))
+
+# Print and visualize the model results  
+  pls_fit
+```
+
+    ## Partial Least Squares 
+    ## 
+    ## 2952 samples
+    ##   14 predictor
+    ##    2 classes: 'NonDiabetes', 'Diabetes' 
+    ## 
+    ## Pre-processing: centered (20), scaled (20) 
+    ## Resampling: Cross-Validated (5 fold) 
+    ## Summary of sample sizes: 2362, 2361, 2361, 2362, 2362 
+    ## Resampling results across tuning parameters:
+    ## 
+    ##   ncomp  logLoss  
+    ##    1     0.5841062
+    ##    2     0.5803316
+    ##    3     0.5798520
+    ##    4     0.5796535
+    ##    5     0.5796125
+    ##    6     0.5795836
+    ##    7     0.5795853
+    ##    8     0.5795912
+    ##    9     0.5795900
+    ##   10     0.5795903
+    ##   11     0.5795903
+    ##   12     0.5795903
+    ##   13     0.5795903
+    ##   14     0.5795903
+    ## 
+    ## logLoss was used to select the optimal model using the smallest value.
+    ## The final value used for the model was ncomp = 6.
+
+``` r
+  plot(pls_fit)
+```
+
+![](work_files/figure-gfm/unnamed-chunk-27-1.png)<!-- --> \###
+Regularized Logistic Regression Model
 
 - A summary of **regularized logistic regression**
 
@@ -908,3 +983,99 @@ analysis when dealing with classification problems, especially when
 overfitting is a concern.
 
 - Fit a regularized logistic regression model
+
+``` r
+library(caret)
+library(glmnet)
+library(LiblineaR)
+```
+
+    ## Warning: package 'LiblineaR' was built under R version 4.3.2
+
+``` r
+library(Metrics)
+# Select variables for fitting the model
+predictors <- c("HighBP", "HighChol", "CholCheck", 
+                "BMI", "Smoker", "Stroke", "PhysActivity",
+                "HvyAlcoholConsump", "GenHlth", "MentHlth", 
+                "PhysHlth", "Sex", "Age", "Income"
+)
+
+
+# Create a grid of values for cost, loss, and epsilon
+tuning_grid <- expand.grid(
+  cost = c(0.01, 0.1, 1, 10),
+  loss = "L1",
+  epsilon = c(0.001, 0.01, 0.1)
+)
+
+# Fit a Lasso model
+reglog_fit <- train(Diabetes_binary ~ .,
+                    data = train_set[, c("Diabetes_binary", predictors)],
+                    method = "regLogistic",
+                    trControl = trainControl(method = "cv", 
+                                             number = 5,
+                                             classProbs = TRUE,
+                                             summaryFunction = mnLogLoss), 
+                    preProcess = c("center", "scale"), 
+                    metric = "logLoss",
+                    tuneGrid = tuning_grid
+                    )  # <- Added closing parenthesis here
+
+# Print and visualize the model results  
+reglog_fit  
+```
+
+    ## Regularized Logistic Regression 
+    ## 
+    ## 2952 samples
+    ##   14 predictor
+    ##    2 classes: 'NonDiabetes', 'Diabetes' 
+    ## 
+    ## Pre-processing: centered (20), scaled (20) 
+    ## Resampling: Cross-Validated (5 fold) 
+    ## Summary of sample sizes: 2361, 2361, 2362, 2362, 2362 
+    ## Resampling results across tuning parameters:
+    ## 
+    ##   cost   epsilon  logLoss  
+    ##    0.01  0.001    0.5484019
+    ##    0.01  0.010    0.5484668
+    ##    0.01  0.100    0.5486263
+    ##    0.10  0.001    0.5200163
+    ##    0.10  0.010    0.5200054
+    ##    0.10  0.100    0.5200201
+    ##    1.00  0.001    0.5206457
+    ##    1.00  0.010    0.5206392
+    ##    1.00  0.100    0.5203495
+    ##   10.00  0.001    0.5207740
+    ##   10.00  0.010    0.5207899
+    ##   10.00  0.100    0.5203587
+    ## 
+    ## Tuning parameter 'loss' was held constant at a value of L1
+    ## logLoss was used to select the optimal model using the smallest value.
+    ## The final values used for the model were cost = 0.1, loss = L1 and epsilon
+    ##  = 0.01.
+
+``` r
+plot(reglog_fit)
+```
+
+![](work_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
+## Final Model Selection
+
+``` r
+# convert Diabetes_binary factors to numeric.
+  test_set$Diabetes_binary <- as.numeric(test_set$Diabetes_binary)
+# Obtain predicted probabilities
+  predicted_prob6 <- predict(reglog_fit, newdata = test_set, type = "prob")
+  
+
+  log_loss6 <- logLoss(test_set$Diabetes_binary, predicted_prob6$Diabetes)
+# print log loss values
+log_loss6
+```
+
+    ## [1] 1.513614
+
+\`\`\`

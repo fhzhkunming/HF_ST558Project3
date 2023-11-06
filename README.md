@@ -9,7 +9,8 @@ The following R packages used for this project:
 + [`DT`](https://rstudio.github.io/DT/)
 + [`metrics`](https://cran.r-project.org/web/packages/Metrics/index.html)
 + [`glmnet`](https://cran.r-project.org/web/packages/glmnet/index.html)
-+ [pls](https://cran.r-project.org/web/packages/pls/index.html)
++ [`LiblineaR`](https://cran.r-project.org/web/packages/LiblineaR/index.html)
++ [`pls`](https://cran.r-project.org/web/packages/pls/index.html)
 
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
 ```
