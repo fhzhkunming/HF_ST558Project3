@@ -43,8 +43,7 @@ models will be rigorously evaluated using the test dataset, and we will
 determine the most effective model for predicting diabetes outcomes.
 
 Description of variables in the data set:  
-Diabetes_binary: 0 = no diabetes 1 =
-prediabetes or diabetes  
++ Diabetes_binary: 0 = no diabetes 1 = prediabetes or diabetes  
 + HighBP: High blood pressure  
 + HighChol: High cholesterol  
 + CholCheck: 0 = no cholesterol check in 5 years 1 = yes cholesterol
@@ -215,6 +214,7 @@ kable(rounded_Cor_Matrix)
 ### Visualization of correlation with `Diabetes_binary` through bar graph
 
 ``` r
+# Load required libraries
 library(ggplot2)
 # Exclude the character variable from the data
 data <- EducationData[, !(names(EducationData) %in% "Education")]
@@ -270,8 +270,7 @@ EducationData$PhysActivity <- factor(EducationData$PhysActivity, levels = c(0, 1
 EducationData$HvyAlcoholConsump <- as.factor(EducationData$HvyAlcoholConsump)
 EducationData$AnyHealthcare <- as.factor(EducationData$AnyHealthcare)
 EducationData$NoDocbcCost <- as.factor(EducationData$NoDocbcCost)
-EducationData$DiffWalk <- factor(EducationData$DiffWalk, levels = c(0, 1),
-                                       labels = c("No", "Yes"))
+EducationData$DiffWalk <- as.factor(EducationData$DiffWalk)
 ```
 
 ### Summary statistics for Character variables
@@ -348,8 +347,8 @@ kable(table(EducationData$Diabetes_binary, EducationData$HighBP, EducationData$S
 | NonDiabetes | HighBP    | Male   |  687 |
 | Diabetes    | HighBP    | Male   |  398 |
 
-
 ## Graphical Summaries
+
 ### Bar plots
 
 ``` r
@@ -517,18 +516,18 @@ library(caret)
 library(lattice)
 
 # Set seed for reproducibility
-set.seed(110)
+  set.seed(110)
 
 # Create a data partition for training (70%) and testing (30%) data
-intrain <- createDataPartition(y = EducationData$Diabetes_binary,
+  intrain <- createDataPartition(y = EducationData$Diabetes_binary,
                                  p = 0.70,
                                  list = FALSE
                                  )
 # Create the training data set using the partition
-train_set <- EducationData[intrain,]
+  train_set <- EducationData[intrain,]
 
 # Create the testing data set using he partition
-test_set <- EducationData[-intrain,]
+  test_set <- EducationData[-intrain,]
 ```
 
 ## Summarize and fit models
@@ -587,56 +586,55 @@ suitable for fitting logistic regression model.
 
 ``` r
 library(caret)
-library(Metrics)
-```
 
-    ## 
-    ## Attaching package: 'Metrics'
-
-    ## The following objects are masked from 'package:caret':
-    ## 
-    ##     precision, recall
-
-``` r
 # Set seed for reproducibility
-set.seed(111)
+  set.seed(111)
 
 # Fit the logistic regression models
-log_reg1 <- train(Diabetes_binary ~ HighBP + HighChol + CholCheck + 
-                    Smoker + Fruits + Veggies + Sex + Income, 
-               data = train_set, 
-               family = "binomial",
-               method = "glm",
-               preProcess = c("center", "scale"),
-               trControl = trainControl(method = "cv", number = 5),
-               metric = "Accuracy",  
-               trace = FALSE
-               )
+  log_reg1 <- train(Diabetes_binary ~ HighBP + HighChol + CholCheck + 
+                      Smoker + Fruits + Veggies + Sex + Income, 
+                 data = train_set, 
+                 family = "binomial",
+                 method = "glm",
+                 preProcess = c("center", "scale"),
+                 trControl = trainControl(method = "cv", 
+                                          number = 5,
+                                          classProbs = TRUE,
+                                          summaryFunction = mnLogLoss),
+                 metric = "logLoss",  
+                 trace = FALSE
+                 )
 
-log_reg2 <- train(Diabetes_binary ~ HighBP*HighChol*CholCheck + 
-                    Smoker + Fruits + Veggies + Sex + Income, 
-               data = train_set, 
-               family = "binomial",
-               method = "glm",
-               preProcess = c("center", "scale"),
-               trControl = trainControl(method = "cv", number = 5),
-               metric = "Accuracy",  
-               trace = FALSE
-               )
+  log_reg2 <- train(Diabetes_binary ~ HighBP*HighChol*CholCheck + 
+                      Smoker + Fruits + Veggies + Sex + Income, 
+                 data = train_set, 
+                 family = "binomial",
+                 method = "glm",
+                 preProcess = c("center", "scale"),
+                 trControl = trainControl(method = "cv", 
+                                          number = 5,
+                                          classProbs = TRUE,
+                                          summaryFunction = mnLogLoss),
+                 metric = "logLoss",  
+                 trace = FALSE
+                 )
 
-log_reg3 <- train(Diabetes_binary ~ HighBP + HighChol + 
-                    CholCheck + Smoker, 
-               data = train_set, 
-               family = "binomial",
-               method = "glm",
-               preProcess = c("center", "scale"),
-               trControl = trainControl(method = "cv", number = 5),
-               metric = "Accuracy",  
-               trace = FALSE
-               )
+  log_reg3 <- train(Diabetes_binary ~ HighBP + HighChol + 
+                      CholCheck + Smoker, 
+                 data = train_set, 
+                 family = "binomial",
+                 method = "glm",
+                 preProcess = c("center", "scale"),
+                 trControl = trainControl(method = "cv", 
+                                          number = 5,
+                                          classProbs = TRUE,
+                                          summaryFunction = mnLogLoss),
+                 metric = "logLoss",  
+                 trace = FALSE
+                 )
 
 # Print the model results
-log_reg1
+  log_reg1
 ```
 
     ## Generalized Linear Model 
@@ -645,16 +643,16 @@ log_reg1
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (8), scaled (8) 
+    ## Pre-processing: centered (14), scaled (14) 
     ## Resampling: Cross-Validated (5 fold) 
     ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
     ## 
-    ##   Accuracy   Kappa   
-    ##   0.7015561  0.135681
+    ##   logLoss  
+    ##   0.5539126
 
 ``` r
-log_reg2
+  log_reg2
 ```
 
     ## Generalized Linear Model 
@@ -663,16 +661,16 @@ log_reg2
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (12), scaled (12) 
+    ## Pre-processing: centered (18), scaled (18) 
     ## Resampling: Cross-Validated (5 fold) 
     ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
     ## 
-    ##   Accuracy   Kappa    
-    ##   0.7076469  0.1536611
+    ##   logLoss  
+    ##   0.5640998
 
 ``` r
-log_reg3
+  log_reg3
 ```
 
     ## Generalized Linear Model 
@@ -686,40 +684,18 @@ log_reg3
     ## Summary of sample sizes: 2362, 2362, 2360, 2362, 2362 
     ## Resampling results:
     ## 
-    ##   Accuracy   Kappa
-    ##   0.7083337  0
+    ##   logLoss  
+    ##   0.5557446
 
 ``` r
 # Test the model
-predicted_test1 <- predict(log_reg1, newdata = test_set, type = "prob")
-predicted_test2 <- predict(log_reg2, newdata = test_set, type = "prob")
-predicted_test3 <- predict(log_reg3, newdata = test_set, type = "prob")
-
-# convert Diabetes_binary factors to numeric and calculate log loss.
-test_set$Diabetes_binary <- as.numeric(test_set$Diabetes_binary)
-log_loss1 <- logLoss(test_set$Diabetes_binary, predicted_test1$Diabetes)
-log_loss2 <- logLoss(test_set$Diabetes_binary, predicted_test2$Diabetes)
-log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_test3$Diabetes)
-
-# Print the logLoss values
-log_loss1
-```
-    ## [1] 1.568187
-
-
-``` r
-log_loss2
-```
-    ## [1] 1.572164
-
-``` r
-log_loss3
+  predicted_test1 <- predict(log_reg1, newdata = test_set)
+  predicted_test2 <- predict(log_reg2, newdata = test_set)
+  predicted_test3 <- predict(log_reg3, newdata = test_set)
 ```
 
-    ## [1] 1.550714
-
-Based on the model fitting results, we select the one with higher
-Accuracy and lower log loss values.
+Based on the model fitting results, we select the one with lower log
+loss value.
 
 ### LASSO Logistic Regression Model
 
@@ -752,44 +728,71 @@ library(glmnet)
     ## Loaded glmnet 4.1-8
 
 ``` r
+library(Metrics)
+```
+
+    ## 
+    ## Attaching package: 'Metrics'
+
+    ## The following objects are masked from 'package:caret':
+    ## 
+    ##     precision, recall
+
+``` r
 # Set seed for reproducibility
-set.seed(112)
+  set.seed(112)
 
 # Select variables for fitting the model
-predictors <- c("HighBP", "HighChol", "CholCheck", 
-                "BMI", "Smoker", "Stroke", "PhysActivity",
-                "HvyAlcoholConsump", "GenHlth", "MentHlth", 
-                "PhysHlth", "Sex", "Age", "Income"
-)
+  predictors <- c("HighBP", "HighChol", "CholCheck", 
+                  "BMI", "Smoker", "Stroke", "PhysActivity",
+                  "HvyAlcoholConsump", "GenHlth", "MentHlth", 
+                  "PhysHlth", "Sex", "Age", "Income"
+                  )
 
 # Create a train control object for cross-validation
-ctrl <- trainControl(method = "cv", # Cross-validation method (k-fold)
-                     number = 5, # Number of cross-validation folds
-                     verboseIter = FALSE
-)
+  ctrl <- trainControl(method = "cv", # Cross-validation method (k-fold)
+                       number = 5, # Number of cross-validation folds
+                       verboseIter = FALSE,
+                       classProbs = TRUE,
+                       summaryFunction = mnLogLoss
+                       )
+                      
 
-lambdas <- c(seq(0, 2, length = 3))
+ lambdas <- c(seq(0, 2, length = 3))
 
 # Fit a Lasso model
-lasso_fit <- train(Diabetes_binary ~ .,
-                   data = train_set[, c("Diabetes_binary", predictors)],
-                   method = "glmnet",
-                   trControl = ctrl,
-                   tuneGrid = expand.grid(alpha = 1, lambda = 0), # Alpha = 1 for LASSO
-                   metric = "logLoss" # Use logLoss metric for evaluation
-)
+  lasso_fit <- train(Diabetes_binary ~ .,
+                     data = train_set[, c("Diabetes_binary", predictors)],
+                     method = "glmnet",
+                     trControl = ctrl,
+                     tuneGrid = expand.grid(alpha = 1, lambda = 0), # Alpha = 1 for LASSO
+                     metric = "logLoss" # Use logLoss metric for evaluation
+                     )
 
 # Predict probabilities on the test set
-predicted_lasso <- predict(lasso_fit, newdata = test_set, type = "prob")
+  predicted_lasso <- predict(lasso_fit, newdata = test_set)
 
-# Calculate LogLoss manually
-log_loss <- logLoss(test_set$Diabetes_binary, predicted_lasso$Diabetes)
-
-# Print the log loss value
-log_loss
+# Print model results
+  lasso_fit
 ```
-    ## [1] 1.559814
 
+    ## glmnet 
+    ## 
+    ## 2952 samples
+    ##   14 predictor
+    ##    2 classes: 'NonDiabetes', 'Diabetes' 
+    ## 
+    ## No pre-processing
+    ## Resampling: Cross-Validated (5 fold) 
+    ## Summary of sample sizes: 2361, 2361, 2362, 2362, 2362 
+    ## Resampling results:
+    ## 
+    ##   logLoss  
+    ##   0.5216855
+    ## 
+    ## Tuning parameter 'alpha' was held constant at a value of 1
+    ## Tuning
+    ##  parameter 'lambda' was held constant at a value of 0
 
 ### Classification Tree Model
 
@@ -823,32 +826,84 @@ gradient boosting are often used to to enhance their performance.
 - Fit a Classification Tree Model
 
 ``` r
-# library(rpart)
-# 
-# # Set a seed for reproducibility
-# set.seed(123)
-# 
-# # Set trainControl parameters 
-# trctrl <- trainControl(method = "repeatedcv",
-#                        number = 5,
-#                        repeats = 3
-#                        )
-# # Create a tuneGrid with tuning value of cp 0, 0.001 0.002,..., 0.1
-# tuneGrid <- expand.grid(cp = seq(0, 0.1, by = 0.001))
-# 
-# # Fit the kNN model
-# class_fit <- train(HeartDisease ~.,
-#                    data = training,
-#                    method = "rpart",
-#                    trControl=trctrl,
-#                    preProcess = c("center", "scale"),
-#                    # Preprocess data by centering and scaling
-#                    tuneGrid = tuneGrid
-#                    )
-# 
-# # Check the result of the train() method
-# class_fit
+library(rpart)
+
+# Set a seed for reproducibility
+  set.seed(123)
+
+# Set trainControl parameters
+  trctrl <- trainControl(method = "cv",
+                         number = 5,
+                         classProbs = TRUE,
+                         summaryFunction = mnLogLoss
+                         )
+# Create a tuneGrid with tuning value of cp 0, 0.001 0.002,..., 0.1
+  tuneGrid <- expand.grid(cp = seq(0, 0.025, by = 0.001))
+
+# Fit the classification model with log loss as the metric
+  class_fit <- train(Diabetes_binary ~.,
+                     #data = train_set,
+                     data = train_set[, c("Diabetes_binary", predictors)],
+                     method = "rpart",
+                     trControl=trctrl,
+                     preProcess = c("center", "scale"),
+                     # Preprocess data by centering and scaling
+                     tuneGrid = tuneGrid,
+                     metric = "logLoss"
+                     )
+
+# Check the model result
+  class_fit
 ```
+
+    ## CART 
+    ## 
+    ## 2952 samples
+    ##   14 predictor
+    ##    2 classes: 'NonDiabetes', 'Diabetes' 
+    ## 
+    ## Pre-processing: centered (20), scaled (20) 
+    ## Resampling: Cross-Validated (5 fold) 
+    ## Summary of sample sizes: 2362, 2361, 2361, 2362, 2362 
+    ## Resampling results across tuning parameters:
+    ## 
+    ##   cp     logLoss  
+    ##   0.000  0.9724407
+    ##   0.001  0.9132913
+    ##   0.002  0.8304357
+    ##   0.003  0.6655160
+    ##   0.004  0.6395425
+    ##   0.005  0.6227788
+    ##   0.006  0.6186044
+    ##   0.007  0.5965234
+    ##   0.008  0.5734387
+    ##   0.009  0.5726867
+    ##   0.010  0.5726867
+    ##   0.011  0.5726867
+    ##   0.012  0.5715160
+    ##   0.013  0.5715160
+    ##   0.014  0.5971083
+    ##   0.015  0.5971083
+    ##   0.016  0.5971083
+    ##   0.017  0.5971083
+    ##   0.018  0.5971083
+    ##   0.019  0.5971083
+    ##   0.020  0.5971083
+    ##   0.021  0.5971083
+    ##   0.022  0.5961710
+    ##   0.023  0.5961710
+    ##   0.024  0.5961710
+    ##   0.025  0.5996669
+    ## 
+    ## logLoss was used to select the optimal model using the smallest value.
+    ## The final value used for the model was cp = 0.013.
+
+``` r
+# Plot the results of accuracy vs k-value
+  plot(class_fit)
+```
+
+![](work_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 ### Random Forest
 
@@ -874,6 +929,59 @@ basic classification trees.
 
 - Fit a random forest model
 
+``` r
+# fit a random forest model
+  rf_fit <- train(Diabetes_binary ~ ., 
+                  data = train_set[, c("Diabetes_binary", predictors)], 
+                  method = "rf",
+                  trControl = trainControl(method = "cv", 
+                                           number = 5,
+                                           classProbs = TRUE,
+                                           summaryFunction = mnLogLoss),
+                  preProcess = c("center", "scale"), 
+                  metric = "logLoss",
+                  tuneGrid = data.frame(mtry = 1:14))
+
+# Print and visualize the model results  
+  rf_fit
+```
+
+    ## Random Forest 
+    ## 
+    ## 2952 samples
+    ##   14 predictor
+    ##    2 classes: 'NonDiabetes', 'Diabetes' 
+    ## 
+    ## Pre-processing: centered (20), scaled (20) 
+    ## Resampling: Cross-Validated (5 fold) 
+    ## Summary of sample sizes: 2362, 2361, 2362, 2361, 2362 
+    ## Resampling results across tuning parameters:
+    ## 
+    ##   mtry  logLoss  
+    ##    1    0.8942095
+    ##    2    0.5612582
+    ##    3    0.5358593
+    ##    4    0.5342024
+    ##    5    0.5359917
+    ##    6    0.5386256
+    ##    7    0.5415789
+    ##    8    0.5498818
+    ##    9    0.5639708
+    ##   10    0.5461194
+    ##   11    0.5483890
+    ##   12    0.5487685
+    ##   13    0.5479490
+    ##   14    0.5687812
+    ## 
+    ## logLoss was used to select the optimal model using the smallest value.
+    ## The final value used for the model was mtry = 4.
+
+``` r
+  plot(rf_fit)
+```
+
+![](work_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+
 ### Partial Least Squares Model
 
 - A summary of a **partial least squares model**
@@ -890,7 +998,75 @@ models cannot directly deal with.
 
 - Fit a partial least squares model
 
-### Regularized Logistic Regression Model
+``` r
+# load the required library
+library(pls)
+```
+
+    ## 
+    ## Attaching package: 'pls'
+
+    ## The following object is masked from 'package:caret':
+    ## 
+    ##     R2
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     loadings
+
+``` r
+# fit partial least squares model
+  pls_fit <- train(Diabetes_binary ~ ., 
+                  data = train_set[, c("Diabetes_binary", predictors)], 
+                  method = "pls",
+                  trControl = trainControl(method = "cv", 
+                                           number = 5,
+                                           classProbs = TRUE,
+                                           summaryFunction = mnLogLoss), 
+                  preProcess = c("center", "scale"), 
+                  metric = "logLoss",
+                  tuneGrid = data.frame(ncomp = 1:14))
+
+# Print and visualize the model results  
+  pls_fit
+```
+
+    ## Partial Least Squares 
+    ## 
+    ## 2952 samples
+    ##   14 predictor
+    ##    2 classes: 'NonDiabetes', 'Diabetes' 
+    ## 
+    ## Pre-processing: centered (20), scaled (20) 
+    ## Resampling: Cross-Validated (5 fold) 
+    ## Summary of sample sizes: 2360, 2362, 2362, 2362, 2362 
+    ## Resampling results across tuning parameters:
+    ## 
+    ##   ncomp  logLoss  
+    ##    1     0.5842696
+    ##    2     0.5804466
+    ##    3     0.5800789
+    ##    4     0.5798295
+    ##    5     0.5797682
+    ##    6     0.5797455
+    ##    7     0.5797532
+    ##    8     0.5797577
+    ##    9     0.5797567
+    ##   10     0.5797569
+    ##   11     0.5797569
+    ##   12     0.5797569
+    ##   13     0.5797569
+    ##   14     0.5797569
+    ## 
+    ## logLoss was used to select the optimal model using the smallest value.
+    ## The final value used for the model was ncomp = 6.
+
+``` r
+  plot(pls_fit)
+```
+
+![](work_files/figure-gfm/unnamed-chunk-26-1.png)<!-- --> \###
+Regularized Logistic Regression Model
 
 - A summary of **regularized logistic regression**
 
@@ -908,3 +1084,60 @@ analysis when dealing with classification problems, especially when
 overfitting is a concern.
 
 - Fit a regularized logistic regression model
+
+## Final Model Selection
+
+``` r
+# convert Diabetes_binary factors to numeric.
+  test_set$Diabetes_binary <- as.numeric(test_set$Diabetes_binary)
+# Obtain predicted probabilities
+  predicted_prob1 <- predict(log_reg1, newdata = test_set, type = "prob")
+  predicted_prob2 <- predict(lasso_fit, newdata = test_set, type = "prob")
+  predicted_prob3 <- predict(class_fit, newdata = test_set, type = "prob")
+  predicted_prob4 <- predict(rf_fit, newdata = test_set, type = "prob")
+  predicted_prob5 <- predict(pls_fit, newdata = test_set, type = "prob")
+  
+# Calculate Log Loss manually for each model
+  log_loss1 <- logLoss(test_set$Diabetes_binary, predicted_prob1$Diabetes)
+  log_loss2 <- logLoss(test_set$Diabetes_binary, predicted_prob2$Diabetes)
+  log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_prob3$Diabetes)
+
+# Add a small constant value to the predicted probabilities to avoid infinite output
+  predicted_prob4$Diabetes <- pmax(predicted_prob4$Diabetes, 1e-15)
+  predicted_prob4$Diabetes <- pmin(predicted_prob4$Diabetes, 1 - 1e-15)
+  
+  log_loss4 <- logLoss(test_set$Diabetes_binary, predicted_prob4$Diabetes)
+  log_loss5 <- logLoss(test_set$Diabetes_binary, predicted_prob5$Diabetes)
+
+# print log loss values
+log_loss1
+```
+
+    ## [1] 1.568187
+
+``` r
+log_loss2
+```
+
+    ## [1] 1.559814
+
+``` r
+log_loss3
+```
+
+    ## [1] 1.502088
+
+``` r
+log_loss4
+```
+
+    ## [1] 1.74579
+
+``` r
+log_loss5
+```
+
+    ## [1] 0.9708239
+
+Based on the results, the model with the lowest log loss value is the
+optimal model for selection.
