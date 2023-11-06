@@ -43,7 +43,8 @@ models will be rigorously evaluated using the test dataset, and we will
 determine the most effective model for predicting diabetes outcomes.
 
 Description of variables in the data set:  
-+ Diabetes_binary: 0 = no diabetes 1 = prediabetes or diabetes  
+Diabetes_binary: 0 = no diabetes 1 =
+prediabetes or diabetes  
 + HighBP: High blood pressure  
 + HighChol: High cholesterol  
 + CholCheck: 0 = no cholesterol check in 5 years 1 = yes cholesterol
@@ -128,13 +129,13 @@ EducationData <- filter(diabetes, (Education == params$Edu))
 
 # EDA
 
-## Checking the missing values
+### Checking the missing values
 
 ``` r
 missing_values <- colSums(is.na(EducationData))
 ```
 
-## Summary statistics for numeric variables
+### Summary statistics for numeric variables
 
 ``` r
 library(dplyr)
@@ -187,13 +188,13 @@ knitr::kable(transposed_summary_table)
 
 The center and spread of each variable can be found in this table.
 
-## Check the correlation between `Diabetes_binary` and the other variables
+### Check the correlation between Diabetes_binary and the other variables
 
 ``` r
 library(knitr)
 # Create a correlation matrix between variables
 Cor_Matrix <- EducationData %>% 
-         select(Diabetes_binary, BMI, GenHlth, MentHlth, PhysHlth, Age, Income) %>%
+         select(Diabetes_binary, BMI, MentHlth, PhysHlth, Age, Income) %>%
          cor()
 
 # Round the correlation matrix to two decimal places
@@ -202,17 +203,16 @@ rounded_Cor_Matrix <- round(Cor_Matrix, digits = 2)
 kable(rounded_Cor_Matrix)
 ```
 
-|                 | Diabetes_binary |   BMI | GenHlth | MentHlth | PhysHlth |   Age | Income |
-|:----------------|----------------:|------:|--------:|---------:|---------:|------:|-------:|
-| Diabetes_binary |            1.00 |  0.17 |    0.26 |     0.10 |     0.16 |  0.16 |  -0.15 |
-| BMI             |            0.17 |  1.00 |    0.10 |     0.07 |     0.08 | -0.12 |  -0.05 |
-| GenHlth         |            0.26 |  0.10 |    1.00 |     0.31 |     0.51 |  0.08 |  -0.26 |
-| MentHlth        |            0.10 |  0.07 |    0.31 |     1.00 |     0.40 | -0.08 |  -0.15 |
-| PhysHlth        |            0.16 |  0.08 |    0.51 |     0.40 |     1.00 |  0.07 |  -0.19 |
-| Age             |            0.16 | -0.12 |    0.08 |    -0.08 |     0.07 |  1.00 |  -0.12 |
-| Income          |           -0.15 | -0.05 |   -0.26 |    -0.15 |    -0.19 | -0.12 |   1.00 |
+|                 | Diabetes_binary |   BMI | MentHlth | PhysHlth |   Age | Income |
+|:----------------|----------------:|------:|---------:|---------:|------:|-------:|
+| Diabetes_binary |            1.00 |  0.17 |     0.10 |     0.16 |  0.16 |  -0.15 |
+| BMI             |            0.17 |  1.00 |     0.07 |     0.08 | -0.12 |  -0.05 |
+| MentHlth        |            0.10 |  0.07 |     1.00 |     0.40 | -0.08 |  -0.15 |
+| PhysHlth        |            0.16 |  0.08 |     0.40 |     1.00 |  0.07 |  -0.19 |
+| Age             |            0.16 | -0.12 |    -0.08 |     0.07 |  1.00 |  -0.12 |
+| Income          |           -0.15 | -0.05 |    -0.15 |    -0.19 | -0.12 |   1.00 |
 
-## Visualization of correlation with `Diabetes_binary` through bar graph
+### Visualization of correlation with `Diabetes_binary` through bar graph
 
 ``` r
 library(ggplot2)
@@ -242,13 +242,14 @@ In this chart, some of the variables exhibited positive correlations
 with ‘Diabetes_binary,’ while others showed negative correlations with
 it.
 
-## Convert some variables to factor
+### Convert some variables to factor
 
 ``` r
 EducationData$Diabetes_binary <- factor(EducationData$Diabetes_binary, 
                                        levels = c(0, 1),
                                        labels = c("NonDiabetes", "Diabetes"))
-# EducationData$Income <- as.factor(EducationData$Income)
+EducationData$Income <- as.factor(EducationData$Income)
+EducationData$Education <- as.factor(EducationData$Education)
 EducationData$HighBP <- factor(EducationData$HighBP,
                                levels = c(0, 1),
                                labels = c("NonHighBP", "HighBP"))
@@ -261,8 +262,7 @@ EducationData$Fruits <- factor(EducationData$Fruits,levels = c(0, 1),
 EducationData$Veggies <- factor(EducationData$Veggies,levels = c(0, 1),
                                 labels = c("No", "Yes"))
 EducationData$CholCheck <- as.factor(EducationData$CholCheck)
-EducationData$Smoker <- factor(EducationData$Smoker, levels = c(0, 1),
-                                labels = c("No", "Yes"))
+EducationData$Smoker <- as.factor(EducationData$Smoker)
 EducationData$Stroke <- as.factor(EducationData$Stroke)
 EducationData$HeartDiseaseorAttack <- as.factor(EducationData$HeartDiseaseorAttack)
 EducationData$PhysActivity <- factor(EducationData$PhysActivity, levels = c(0, 1),
@@ -274,10 +274,9 @@ EducationData$DiffWalk <- factor(EducationData$DiffWalk, levels = c(0, 1),
                                        labels = c("No", "Yes"))
 ```
 
-## Summary statistics for Character variables
+### Summary statistics for Character variables
 
 ``` r
-library(knitr)
 # one-way table
 kable(table(EducationData$Diabetes_binary))
 ```
@@ -349,8 +348,8 @@ kable(table(EducationData$Diabetes_binary, EducationData$HighBP, EducationData$S
 | NonDiabetes | HighBP    | Male   |  687 |
 | Diabetes    | HighBP    | Male   |  398 |
 
-## Graphical Summaries
 
+## Graphical Summaries
 ### Bar plots
 
 ``` r
@@ -517,8 +516,8 @@ complots
 library(caret)
 library(lattice)
 
-# set seed for reproducibility
-set.seed(123)
+# Set seed for reproducibility
+set.seed(110)
 
 # Create a data partition for training (70%) and testing (30%) data
 intrain <- createDataPartition(y = EducationData$Diabetes_binary,
@@ -599,6 +598,9 @@ library(Metrics)
     ##     precision, recall
 
 ``` r
+# Set seed for reproducibility
+set.seed(111)
+
 # Fit the logistic regression models
 log_reg1 <- train(Diabetes_binary ~ HighBP + HighChol + CholCheck + 
                     Smoker + Fruits + Veggies + Sex + Income, 
@@ -648,8 +650,8 @@ log_reg1
     ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
     ## 
-    ##   Accuracy   Kappa    
-    ##   0.7093544  0.1519026
+    ##   Accuracy   Kappa   
+    ##   0.7015561  0.135681
 
 ``` r
 log_reg2
@@ -663,11 +665,11 @@ log_reg2
     ## 
     ## Pre-processing: centered (12), scaled (12) 
     ## Resampling: Cross-Validated (5 fold) 
-    ## Summary of sample sizes: 2362, 2361, 2362, 2361, 2362 
+    ## Summary of sample sizes: 2361, 2362, 2362, 2362, 2361 
     ## Resampling results:
     ## 
     ##   Accuracy   Kappa    
-    ##   0.7090051  0.1468737
+    ##   0.7076469  0.1536611
 
 ``` r
 log_reg3
@@ -681,11 +683,11 @@ log_reg3
     ## 
     ## Pre-processing: centered (4), scaled (4) 
     ## Resampling: Cross-Validated (5 fold) 
-    ## Summary of sample sizes: 2361, 2362, 2362, 2361, 2362 
+    ## Summary of sample sizes: 2362, 2362, 2360, 2362, 2362 
     ## Resampling results:
     ## 
     ##   Accuracy   Kappa
-    ##   0.7083335  0
+    ##   0.7083337  0
 
 ``` r
 # Test the model
@@ -702,20 +704,19 @@ log_loss3 <- logLoss(test_set$Diabetes_binary, predicted_test3$Diabetes)
 # Print the logLoss values
 log_loss1
 ```
+    ## [1] 1.568187
 
-    ## [1] 1.632265
 
 ``` r
 log_loss2
 ```
-
-    ## [1] 1.697171
+    ## [1] 1.572164
 
 ``` r
 log_loss3
 ```
 
-    ## [1] 1.606831
+    ## [1] 1.550714
 
 Based on the model fitting results, we select the one with higher
 Accuracy and lower log loss values.
@@ -751,6 +752,9 @@ library(glmnet)
     ## Loaded glmnet 4.1-8
 
 ``` r
+# Set seed for reproducibility
+set.seed(112)
+
 # Select variables for fitting the model
 predictors <- c("HighBP", "HighChol", "CholCheck", 
                 "BMI", "Smoker", "Stroke", "PhysActivity",
@@ -784,8 +788,8 @@ log_loss <- logLoss(test_set$Diabetes_binary, predicted_lasso$Diabetes)
 # Print the log loss value
 log_loss
 ```
+    ## [1] 1.559814
 
-    ## [1] 1.686142
 
 ### Classification Tree Model
 
@@ -817,6 +821,34 @@ complex. To address, ensemble techniques like random forests and
 gradient boosting are often used to to enhance their performance.
 
 - Fit a Classification Tree Model
+
+``` r
+# library(rpart)
+# 
+# # Set a seed for reproducibility
+# set.seed(123)
+# 
+# # Set trainControl parameters 
+# trctrl <- trainControl(method = "repeatedcv",
+#                        number = 5,
+#                        repeats = 3
+#                        )
+# # Create a tuneGrid with tuning value of cp 0, 0.001 0.002,..., 0.1
+# tuneGrid <- expand.grid(cp = seq(0, 0.1, by = 0.001))
+# 
+# # Fit the kNN model
+# class_fit <- train(HeartDisease ~.,
+#                    data = training,
+#                    method = "rpart",
+#                    trControl=trctrl,
+#                    preProcess = c("center", "scale"),
+#                    # Preprocess data by centering and scaling
+#                    tuneGrid = tuneGrid
+#                    )
+# 
+# # Check the result of the train() method
+# class_fit
+```
 
 ### Random Forest
 
