@@ -12,6 +12,7 @@ The following R packages used for this project:
 + [`glmnet`](https://cran.r-project.org/web/packages/glmnet/index.html)
 + [`LiblineaR`](https://cran.r-project.org/web/packages/LiblineaR/index.html)
 + [`pls`](https://cran.r-project.org/web/packages/pls/index.html)
++ [`xfun`](https://cran.r-project.org/web/packages/xfun/index.html)
 
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
 ```
