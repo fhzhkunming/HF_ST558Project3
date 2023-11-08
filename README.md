@@ -8,13 +8,17 @@ The following R packages used for this project:
 + [`shiny`](https://cran.r-project.org/web/packages/shiny/index.html)
 + [`DT`](https://rstudio.github.io/DT/)
 + [`cowplot`](https://cran.r-project.org/web/packages/cowplot/index.html)
++ [`metrics`](https://cran.r-project.org/web/packages/Metrics/index.html)
++ [`glmnet`](https://cran.r-project.org/web/packages/glmnet/index.html)
++ [`LiblineaR`](https://cran.r-project.org/web/packages/LiblineaR/index.html)
++ [`pls`](https://cran.r-project.org/web/packages/pls/index.html)
 
 The code used to create the analyses from a single .Rmd file (i.e. the render() code)
 ```
 library(rmarkdown)
 
 EducationLv <- unique(diabetes$Education)
-output_file <- paste0(EducationLv, ".html")
+output_file <- paste0(EducationLv, ".md")
 params = lapply(EducationLv, FUN = function(x){list(Edu = x)})
 reports <- tibble::tibble(output_file, params)
 reports
@@ -27,7 +31,6 @@ apply(reports, MARGIN = 1,
 ```
  				
 You can access the rendered documents:
-+ Analysis for [work.md](work.html)
 + Analysis for [SomeElementaty](SomeElementary.html)    
 + Analysis for [SomeHighSchool](SomeHighSchool.html) 
 + Analysis for [HighSchool](HighSchool.html)  
