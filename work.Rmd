@@ -2,7 +2,9 @@
 title: "ST558_Project3"
 author: "Hui and Joy"
 date: "2023-11-02"
-output: github_document
+output: 
+  github_document:
+    html_preview: false
 params:
       Edu: "SomeElementary"
 ---
@@ -10,7 +12,6 @@ params:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 
 # Introduction
 

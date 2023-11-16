@@ -125,7 +125,7 @@ diabetes$Education <- ifelse(diabetes$Education %in% c(1, 2), "SomeElementary",
                                )
                             )
 
-cache_rds(diabetes, file = "modified_data.rds")
+xfun::cache_rds(diabetes, file = "new_cached_data.rds")
 ```
 
     ## # A tibble: 253,680 × 22
@@ -1007,7 +1007,8 @@ basic classification trees.
 
 ``` r
 # fit a random forest model
-  rf_fit <- train(Diabetes_binary ~ HighBP + HighChol + BMI + GenHlth + PhysHlth + DiffWalk, 
+  rf_fit <- train(Diabetes_binary ~ HighBP + HighChol + 
+                  BMI + GenHlth + PhysHlth + DiffWalk, 
                   data = train_set, 
                   method = "rf",
                   trControl = trainControl(method = "repeatedcv", 
@@ -1070,7 +1071,20 @@ models cannot directly deal with.
 ``` r
 # load the required library
 library(pls)
+```
 
+    ## 
+    ## Attaching package: 'pls'
+
+    ## The following object is masked from 'package:caret':
+    ## 
+    ##     R2
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     loadings
+
+``` r
 # fit partial least squares model
   pls_fit <- train(Diabetes_binary ~ ., 
                   data = train_set[, c("Diabetes_binary", predictors)], 

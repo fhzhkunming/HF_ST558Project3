@@ -106,12 +106,12 @@ head(diabetes)
     ## 4               0      1        0
     ## 5               0      1        1
     ## 6               0      1        1
-    ## # ℹ 19 more variables: CholCheck <dbl>,
-    ## #   BMI <dbl>, Smoker <dbl>,
-    ## #   Stroke <dbl>,
+    ## # ℹ 19 more variables:
+    ## #   CholCheck <dbl>, BMI <dbl>,
+    ## #   Smoker <dbl>, Stroke <dbl>,
     ## #   HeartDiseaseorAttack <dbl>,
-    ## #   PhysActivity <dbl>, Fruits <dbl>,
-    ## #   Veggies <dbl>,
+    ## #   PhysActivity <dbl>,
+    ## #   Fruits <dbl>, Veggies <dbl>,
     ## #   HvyAlcoholConsump <dbl>, …
 
 ## Group data based on education levels
@@ -145,12 +145,12 @@ xfun::cache_rds(diabetes, file = "new_cached_data.rds")
     ##  9               1      1        1
     ## 10               0      0        0
     ## # ℹ 253,670 more rows
-    ## # ℹ 19 more variables: CholCheck <dbl>,
-    ## #   BMI <dbl>, Smoker <dbl>,
-    ## #   Stroke <dbl>,
+    ## # ℹ 19 more variables:
+    ## #   CholCheck <dbl>, BMI <dbl>,
+    ## #   Smoker <dbl>, Stroke <dbl>,
     ## #   HeartDiseaseorAttack <dbl>,
-    ## #   PhysActivity <dbl>, Fruits <dbl>,
-    ## #   Veggies <dbl>, …
+    ## #   PhysActivity <dbl>,
+    ## #   Fruits <dbl>, Veggies <dbl>, …
 
 ``` r
 params$Edu
@@ -745,7 +745,8 @@ library(caret)
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (8), scaled (8) 
+    ## Pre-processing: centered
+    ##  (8), scaled (8) 
     ## Resampling: Cross-Validated (5 fold, repeated 3 times) 
     ## Summary of sample sizes: 5308, 5310, 5309, 5309, 5308, 5309, ... 
     ## Resampling results:
@@ -763,8 +764,8 @@ library(caret)
     ##    8 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (12),
-    ##  scaled (12) 
+    ## Pre-processing: centered
+    ##  (12), scaled (12) 
     ## Resampling: Cross-Validated (5 fold, repeated 3 times) 
     ## Summary of sample sizes: 5309, 5309, 5309, 5308, 5309, 5310, ... 
     ## Resampling results:
@@ -782,7 +783,8 @@ library(caret)
     ##    4 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (4), scaled (4) 
+    ## Pre-processing: centered
+    ##  (4), scaled (4) 
     ## Resampling: Cross-Validated (5 fold, repeated 3 times) 
     ## Summary of sample sizes: 5308, 5308, 5310, 5309, 5309, 5309, ... 
     ## Resampling results:
@@ -872,9 +874,9 @@ library(Metrics)
     ##   0.4722673
     ## 
     ## Tuning parameter 'alpha' was
-    ## 
-    ## Tuning parameter 'lambda' was
-    ##  held constant at a value of 0
+    ##  1
+    ## Tuning parameter 'lambda'
+    ##  was held constant at a value of 0
 
 ### Classification Tree Model
 
@@ -945,8 +947,8 @@ library(rpart)
     ##   14 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (14),
-    ##  scaled (14) 
+    ## Pre-processing: centered
+    ##  (14), scaled (14) 
     ## Resampling: Cross-Validated (5 fold, repeated 3 times) 
     ## Summary of sample sizes: 5309, 5309, 5309, 5309, 5308, 5310, ... 
     ## Resampling results across tuning parameters:
@@ -979,11 +981,11 @@ library(rpart)
     ##   0.024  0.5537334
     ##   0.025  0.5537334
     ## 
-    ## logLoss was used to select the
-    ##  optimal model using the
-    ##  smallest value.
-    ## The final value used for the model
-    ##  was cp = 0.005.
+    ## logLoss was used to select
+    ##  the optimal model using
+    ##  the smallest value.
+    ## The final value used for the
+    ##  model was cp = 0.005.
 
 ``` r
 # Plot the results of accuracy vs k-value
@@ -1041,7 +1043,8 @@ basic classification trees.
     ##    6 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (6), scaled (6) 
+    ## Pre-processing: centered
+    ##  (6), scaled (6) 
     ## Resampling: Cross-Validated (5 fold, repeated 3 times) 
     ## Summary of sample sizes: 5309, 5309, 5308, 5309, 5309, 5310, ... 
     ## Resampling results across tuning parameters:
@@ -1054,11 +1057,11 @@ basic classification trees.
     ##   5     1.168782
     ##   6     1.203634
     ## 
-    ## logLoss was used to select the
-    ##  optimal model using the
-    ##  smallest value.
-    ## The final value used for the model
-    ##  was mtry = 4.
+    ## logLoss was used to select
+    ##  the optimal model using
+    ##  the smallest value.
+    ## The final value used for the
+    ##  model was mtry = 4.
 
 ``` r
   plot(rf_fit)
@@ -1110,8 +1113,8 @@ library(pls)
     ##   14 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (14),
-    ##  scaled (14) 
+    ## Pre-processing: centered
+    ##  (14), scaled (14) 
     ## Resampling: Cross-Validated (5 fold, repeated 3 times) 
     ## Summary of sample sizes: 5308, 5309, 5309, 5309, 5309, 5308, ... 
     ## Resampling results across tuning parameters:
@@ -1132,11 +1135,11 @@ library(pls)
     ##   13     0.5523567
     ##   14     0.5523567
     ## 
-    ## logLoss was used to select the
-    ##  optimal model using the
-    ##  smallest value.
-    ## The final value used for the model
-    ##  was ncomp = 9.
+    ## logLoss was used to select
+    ##  the optimal model using
+    ##  the smallest value.
+    ## The final value used for the
+    ##  model was ncomp = 9.
 
 ``` r
   plot(pls_fit)
@@ -1207,8 +1210,8 @@ library(Metrics)
     ##   14 predictor
     ##    2 classes: 'NonDiabetes', 'Diabetes' 
     ## 
-    ## Pre-processing: centered (14),
-    ##  scaled (14) 
+    ## Pre-processing: centered
+    ##  (14), scaled (14) 
     ## Resampling: Cross-Validated (5 fold, repeated 3 times) 
     ## Summary of sample sizes: 5310, 5308, 5310, 5308, 5308, 5309, ... 
     ## Resampling results across tuning parameters:
@@ -1229,12 +1232,12 @@ library(Metrics)
     ## 
     ## Tuning parameter 'loss' was
     ##  held constant at a value of L1
-    ## logLoss was used to select the
-    ##  optimal model using the
-    ##  smallest value.
-    ## The final values used for the
-    ##  model were cost = 1, loss = L1
-    ##  and epsilon = 0.1.
+    ## logLoss was used to select
+    ##  the optimal model using
+    ##  the smallest value.
+    ## The final values used for
+    ##  the model were cost = 1, loss
+    ##  = L1 and epsilon = 0.1.
 
 ``` r
   plot(reglog_fit)
